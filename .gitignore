@@ -1,0 +1,13 @@
+# Arquivos temporarios
+*~
+*.tmp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.pyc
+
+# OneDrive
+.tmp.drivedownload/

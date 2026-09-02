@@ -1,0 +1,1170 @@
+{
+  "gerado_em": "2026-09-02T00:07:45",
+  "parametros": {
+    "data_base": "2026-07-20T00:00:00",
+    "data_evento_1": "2026-09-01T00:00:00",
+    "data_evento_2": "2026-09-02T00:00:00",
+    "margem_seguranca": 0.2,
+    "saldo_inicial": 0.0,
+    "pct_pago_contratacao": 0.5,
+    "ejs": [
+      "Produção Jr",
+      "EESC Jr"
+    ],
+    "pacotes": [
+      {
+        "nome": "Executivo",
+        "preco_tabela": 4000.0,
+        "preco_minimo": 3500.0,
+        "cotas_totais": 27,
+        "custo_estande": 1500.0,
+        "margem_unitaria": 2500.0,
+        "faturamento_maximo": 108000.0
+      },
+      {
+        "nome": "Bronze",
+        "preco_tabela": 7500.0,
+        "preco_minimo": 6500.0,
+        "cotas_totais": 10,
+        "custo_estande": 2950.0,
+        "margem_unitaria": 4550.0,
+        "faturamento_maximo": 75000.0
+      },
+      {
+        "nome": "Prata",
+        "preco_tabela": 11500.0,
+        "preco_minimo": 10000.0,
+        "cotas_totais": 4,
+        "custo_estande": 3950.0,
+        "margem_unitaria": 7550.0,
+        "faturamento_maximo": 46000.0
+      },
+      {
+        "nome": "Ouro",
+        "preco_tabela": 15000.0,
+        "preco_minimo": 15000.0,
+        "cotas_totais": 2,
+        "custo_estande": 5925.0,
+        "margem_unitaria": 9075.0,
+        "faturamento_maximo": 30000.0
+      },
+      {
+        "nome": "Patrocínio",
+        "preco_tabela": 3000.0,
+        "preco_minimo": 3000.0,
+        "cotas_totais": 30,
+        "custo_estande": 0.0,
+        "margem_unitaria": 3000.0,
+        "faturamento_maximo": 90000.0
+      }
+    ]
+  },
+  "kpis": {
+    "faturamento_fechado": 212000.0,
+    "custo_estandes_fechados": 79900.0,
+    "margem_fechada": 132100.0,
+    "cotas_vendidas": 25,
+    "cotas_totais": 73,
+    "gasto_total_previsto": 184596.89,
+    "gastos_fixos_independentes": 104696.89000000001,
+    "resultado_hoje": 27403.109999999986,
+    "equilibrio_pct": 1.1484483839353956,
+    "total_pago_realizado": 27306.86,
+    "caixa_pior_mes": -20156.89,
+    "faturamento_maximo_tabela": 349000.0
+  },
+  "vendas": [
+    {
+      "ej": "Produção Jr",
+      "empresa": "Tractian",
+      "pacote": "Ouro",
+      "preco_tabela": 15000.0,
+      "status": "Fechado",
+      "valor_contratado": 15000.0,
+      "custo_estande": 5925.0,
+      "margem": 9075.0,
+      "p1_data": "2026-07-01T00:00:00",
+      "p1_valor": 7500.0,
+      "p2_data": "2026-07-01T00:00:00",
+      "p2_valor": 7500.0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 15000.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Itaú",
+      "pacote": "Ouro",
+      "preco_tabela": 15000.0,
+      "status": "Fechado",
+      "valor_contratado": 15000.0,
+      "custo_estande": 5925.0,
+      "margem": 9075.0,
+      "p1_data": "2026-07-01T00:00:00",
+      "p1_valor": 15000.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 15000.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Artefact",
+      "pacote": "Prata",
+      "preco_tabela": 11500.0,
+      "status": "Fechado",
+      "valor_contratado": 11500.0,
+      "custo_estande": 3950.0,
+      "margem": 7550.0,
+      "p1_data": "2026-08-22T00:00:00",
+      "p1_valor": 11500.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 11500.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Luz",
+      "pacote": "Bronze",
+      "preco_tabela": 7500.0,
+      "status": "Fechado",
+      "valor_contratado": 7500.0,
+      "custo_estande": 2950.0,
+      "margem": 4550.0,
+      "p1_data": "2026-07-01T00:00:00",
+      "p1_valor": 7500.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 7500.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Elogroup",
+      "pacote": "Bronze",
+      "preco_tabela": 7500.0,
+      "status": "Fechado",
+      "valor_contratado": 9500.0,
+      "custo_estande": 2950.0,
+      "margem": 6550.0,
+      "p1_data": "2026-07-30T00:00:00",
+      "p1_valor": 9500.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 9500.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "EESC Jr",
+      "empresa": "PECEGE",
+      "pacote": "Prata",
+      "preco_tabela": 11500.0,
+      "status": "Fechado",
+      "valor_contratado": 11500.0,
+      "custo_estande": 3950.0,
+      "margem": 7550.0,
+      "p1_data": "2026-08-20T00:00:00",
+      "p1_valor": 11500.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 11500.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "EESC Jr",
+      "empresa": "MINERVA",
+      "pacote": "Bronze",
+      "preco_tabela": 7500.0,
+      "status": "Fechado",
+      "valor_contratado": 7500.0,
+      "custo_estande": 2950.0,
+      "margem": 4550.0,
+      "p1_data": "2026-09-14T00:00:00",
+      "p1_valor": 7500.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 7500.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Mastercard",
+      "pacote": "Bronze",
+      "preco_tabela": 7500.0,
+      "status": "Fechado",
+      "valor_contratado": 5500.0,
+      "custo_estande": 2950.0,
+      "margem": 2550.0,
+      "p1_data": null,
+      "p1_valor": 0,
+      "p2_data": null,
+      "p2_valor": 0.0,
+      "p3_data": null,
+      "p3_valor": 0.0,
+      "soma_parcelas": 0.0,
+      "ok": "≠"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Monks",
+      "pacote": "Bronze",
+      "preco_tabela": 7500.0,
+      "status": "Fechado",
+      "valor_contratado": 7500.0,
+      "custo_estande": 2950.0,
+      "margem": 4550.0,
+      "p1_data": "2026-08-31T00:00:00",
+      "p1_valor": 7500.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 7500.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Kis Solutions",
+      "pacote": "Bronze",
+      "preco_tabela": 7500.0,
+      "status": "Fechado",
+      "valor_contratado": 7500.0,
+      "custo_estande": 2950.0,
+      "margem": 4550.0,
+      "p1_data": "2026-09-10T00:00:00",
+      "p1_valor": 7500.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 7500.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "WildLife",
+      "pacote": "Prata",
+      "preco_tabela": 11500.0,
+      "status": "Fechado",
+      "valor_contratado": 11500.0,
+      "custo_estande": 3950.0,
+      "margem": 7550.0,
+      "p1_data": "2026-08-21T00:00:00",
+      "p1_valor": 11500.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 11500.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Smart Dent",
+      "pacote": "Bronze",
+      "preco_tabela": 7500.0,
+      "status": "Fechado",
+      "valor_contratado": 7500.0,
+      "custo_estande": 2950.0,
+      "margem": 4550.0,
+      "p1_data": "2026-08-10T00:00:00",
+      "p1_valor": 3750.0,
+      "p2_data": "2026-09-10T00:00:00",
+      "p2_valor": 3750.0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 7500.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "EESC Jr",
+      "empresa": "Unilever",
+      "pacote": "Bronze",
+      "preco_tabela": 7500.0,
+      "status": "Fechado",
+      "valor_contratado": 7500.0,
+      "custo_estande": 2950.0,
+      "margem": 4550.0,
+      "p1_data": "2026-10-10T00:00:00",
+      "p1_valor": 7500.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 7500.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "EESC Jr",
+      "empresa": "Symrise",
+      "pacote": "Bronze",
+      "preco_tabela": 7500.0,
+      "status": "Fechado",
+      "valor_contratado": 7500.0,
+      "custo_estande": 2950.0,
+      "margem": 4550.0,
+      "p1_data": "2026-09-10T00:00:00",
+      "p1_valor": 7500.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 7500.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "EESC Jr",
+      "empresa": "Bain",
+      "pacote": "Bronze",
+      "preco_tabela": 7500.0,
+      "status": "Fechado",
+      "valor_contratado": 7500.0,
+      "custo_estande": 2950.0,
+      "margem": 4550.0,
+      "p1_data": "2026-09-01T00:00:00",
+      "p1_valor": 7500.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 7500.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "EESC Jr",
+      "empresa": "Alupar ",
+      "pacote": "Bronze",
+      "preco_tabela": 7500.0,
+      "status": "Fechado",
+      "valor_contratado": 7500.0,
+      "custo_estande": 2950.0,
+      "margem": 4550.0,
+      "p1_data": "2026-09-25T00:00:00",
+      "p1_valor": 7500.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 7500.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Jacto",
+      "pacote": "Prata",
+      "preco_tabela": 11500.0,
+      "status": "Fechado",
+      "valor_contratado": 11500.0,
+      "custo_estande": 3950.0,
+      "margem": 7550.0,
+      "p1_data": "2026-09-15T00:00:00",
+      "p1_valor": 11500.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 11500.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Andritz",
+      "pacote": "Prata",
+      "preco_tabela": 11500.0,
+      "status": "Fechado",
+      "valor_contratado": 11500.0,
+      "custo_estande": 3950.0,
+      "margem": 7550.0,
+      "p1_data": null,
+      "p1_valor": 0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 0.0,
+      "ok": "≠"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Qi Tech",
+      "pacote": "Prata",
+      "preco_tabela": 11000.0,
+      "status": "Fechado",
+      "valor_contratado": 11000.0,
+      "custo_estande": 3950.0,
+      "margem": 7050.0,
+      "p1_data": null,
+      "p1_valor": 0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 0.0,
+      "ok": "≠"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Husqvarna",
+      "pacote": "Bronze",
+      "preco_tabela": 7500.0,
+      "status": "Fechado",
+      "valor_contratado": 7500.0,
+      "custo_estande": 2950.0,
+      "margem": 4550.0,
+      "p1_data": "2026-08-31T00:00:00",
+      "p1_valor": 7500.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 7500.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Astra",
+      "pacote": "Bronze",
+      "preco_tabela": 7500.0,
+      "status": "Fechado",
+      "valor_contratado": 7500.0,
+      "custo_estande": 2950.0,
+      "margem": 4550.0,
+      "p1_data": null,
+      "p1_valor": 0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 0.0,
+      "ok": "≠"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Control ID",
+      "pacote": "Executivo",
+      "preco_tabela": 4000.0,
+      "status": "Fechado",
+      "valor_contratado": 4000.0,
+      "custo_estande": 1500.0,
+      "margem": 2500.0,
+      "p1_data": "2026-08-31T00:00:00",
+      "p1_valor": 4000.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 4000.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Yara",
+      "pacote": "Executivo",
+      "preco_tabela": 4000.0,
+      "status": "Fechado",
+      "valor_contratado": 4000.0,
+      "custo_estande": 1500.0,
+      "margem": 2500.0,
+      "p1_data": "2026-08-31T00:00:00",
+      "p1_valor": 4000.0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 4000.0,
+      "ok": "OK"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Huawei",
+      "pacote": "Executivo",
+      "preco_tabela": 4000.0,
+      "status": "Fechado",
+      "valor_contratado": 4000.0,
+      "custo_estande": 1500.0,
+      "margem": 2500.0,
+      "p1_data": null,
+      "p1_valor": 0,
+      "p2_data": null,
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 0.0,
+      "ok": "≠"
+    },
+    {
+      "ej": "Produção Jr",
+      "empresa": "Alcans",
+      "pacote": "Executivo",
+      "preco_tabela": 4000.0,
+      "status": "Fechado",
+      "valor_contratado": 4000.0,
+      "custo_estande": 1500.0,
+      "margem": 2500.0,
+      "p1_data": "2026-09-20T00:00:00",
+      "p1_valor": 2000.0,
+      "p2_data": "2026-10-20T00:00:00",
+      "p2_valor": 0,
+      "p3_data": null,
+      "p3_valor": 0,
+      "soma_parcelas": 2000.0,
+      "ok": "≠"
+    }
+  ],
+  "vendas_por_pacote": {
+    "Executivo": {
+      "fechados": 4,
+      "faturamento": 16000.0,
+      "cotas_totais": 27,
+      "preco_tabela": 4000.0,
+      "custo_estande": 1500.0,
+      "margem_unitaria": 2500.0
+    },
+    "Bronze": {
+      "fechados": 13,
+      "faturamento": 97500.0,
+      "cotas_totais": 10,
+      "preco_tabela": 7500.0,
+      "custo_estande": 2950.0,
+      "margem_unitaria": 4550.0
+    },
+    "Prata": {
+      "fechados": 6,
+      "faturamento": 68500.0,
+      "cotas_totais": 4,
+      "preco_tabela": 11500.0,
+      "custo_estande": 3950.0,
+      "margem_unitaria": 7550.0
+    },
+    "Ouro": {
+      "fechados": 2,
+      "faturamento": 30000.0,
+      "cotas_totais": 2,
+      "preco_tabela": 15000.0,
+      "custo_estande": 5925.0,
+      "margem_unitaria": 9075.0
+    },
+    "Patrocínio": {
+      "fechados": 0,
+      "faturamento": 0.0,
+      "cotas_totais": 30,
+      "preco_tabela": 3000.0,
+      "custo_estande": 0.0,
+      "margem_unitaria": 3000.0
+    }
+  },
+  "faturamento_por_ej": {
+    "Produção Jr": 163000.0,
+    "EESC Jr": 49000.0
+  },
+  "gastos_previstos": {
+    "fixos_dtrip": {
+      "total": 69220.24,
+      "por_mes": {
+        "Jul": 8419.0,
+        "Ago": 8419.0,
+        "Set": 52382.24,
+        "Out": 0.0,
+        "Nov": 0.0,
+        "Dez": 0.0
+      }
+    },
+    "variaveis_estandes": {
+      "total": 79900.0,
+      "por_mes": {
+        "Jul": 0.0,
+        "Ago": 0.0,
+        "Set": 79900.0,
+        "Out": 0.0,
+        "Nov": 0.0,
+        "Dez": 0.0
+      }
+    },
+    "outros": {
+      "total": 35476.65,
+      "por_mes": {
+        "Jul": 2520.0,
+        "Ago": 6985.23,
+        "Set": 24531.42,
+        "Out": 480.0,
+        "Nov": 0.0,
+        "Dez": 0.0
+      }
+    },
+    "total_evento": {
+      "total": 184596.89,
+      "por_mes": {
+        "Jul": 10939.0,
+        "Ago": 15404.23,
+        "Set": 156813.66,
+        "Out": 480.0,
+        "Nov": 0.0,
+        "Dez": 0.0
+      }
+    }
+  },
+  "detalhe_previstos": [
+    {
+      "descricao": "Gestão da Feira (contrato LGDM)",
+      "total": 25257.0
+    },
+    {
+      "descricao": "Lounge Expo 1, 2, 3 e 4",
+      "total": 3060.0
+    },
+    {
+      "descricao": "Backdrop de fotos",
+      "total": 2933.5
+    },
+    {
+      "descricao": "Roda de conversa",
+      "total": 4532.0
+    },
+    {
+      "descricao": "Impostos",
+      "total": 10227.24
+    },
+    {
+      "descricao": "FECHAMENTO AMBIENTES - CORREDOR",
+      "total": 560.0
+    },
+    {
+      "descricao": "TOTENS DE SINALIZAÇÃO COM TV",
+      "total": 900.0
+    },
+    {
+      "descricao": "ÁREA COOFFE",
+      "total": 1980.0
+    },
+    {
+      "descricao": "FECHAMENTO AMBIENTES - ESCADA/COOFEE",
+      "total": 440.0
+    },
+    {
+      "descricao": "TOTEM DE SINALIZAÇÃO MDF",
+      "total": 880.0
+    },
+    {
+      "descricao": "ATIVAÇÃO - CARRINHO DE PIPOCA COM OPERADOR",
+      "total": 1000.0
+    },
+    {
+      "descricao": "AUDITÓRIO LUIS GASTÃO - COMUNICAÇÃO VISUAL PALESTRAS",
+      "total": 1595.0
+    },
+    {
+      "descricao": "ATIVAÇÃO - BACKDROP DE ASSINATURA (L)2,30m X (A)2,30m",
+      "total": 920.0
+    },
+    {
+      "descricao": "BACKDROP DE ENTRADA - (L)4,30m X (A)2,80m",
+      "total": 1750.0
+    },
+    {
+      "descricao": "Logistica, Frete, Montagem",
+      "total": 4500.0
+    },
+    {
+      "descricao": "Credenciamento",
+      "total": 8685.5
+    },
+    {
+      "descricao": "Executivo (4 cotas × R$ 1.500)",
+      "total": 6000.0
+    },
+    {
+      "descricao": "Bronze (13 cotas × R$ 2.950)",
+      "total": 38350.0
+    },
+    {
+      "descricao": "Prata (6 cotas × R$ 3.950)",
+      "total": 23700.0
+    },
+    {
+      "descricao": "Ouro (2 cotas × R$ 5.925)",
+      "total": 11850.0
+    },
+    {
+      "descricao": "Patrocínio (0 cotas × R$ 0)",
+      "total": 0.0
+    },
+    {
+      "descricao": "Marketing",
+      "total": 1440.0
+    },
+    {
+      "descricao": "EJUDI (6x)",
+      "total": 2880.0
+    },
+    {
+      "descricao": "Camisetas",
+      "total": 2280.0
+    },
+    {
+      "descricao": "Ambulância",
+      "total": 2150.0
+    },
+    {
+      "descricao": "Transporte USP Pirassununga <> UFSCar",
+      "total": 615.0
+    },
+    {
+      "descricao": "Ventiladores",
+      "total": 2840.0
+    },
+    {
+      "descricao": "Sorteios",
+      "total": 2721.01
+    },
+    {
+      "descricao": "Crachás",
+      "total": 1779.23
+    },
+    {
+      "descricao": "Segurança",
+      "total": 800.0
+    },
+    {
+      "descricao": "Limpeza",
+      "total": 1650.0
+    },
+    {
+      "descricao": "Cartazes",
+      "total": 50.0
+    },
+    {
+      "descricao": "Banners",
+      "total": 96.0
+    },
+    {
+      "descricao": "Bolsas Brindes",
+      "total": 4375.41
+    },
+    {
+      "descricao": "Internet",
+      "total": 3800.0
+    },
+    {
+      "descricao": "Fotógrafos",
+      "total": 1800.0
+    },
+    {
+      "descricao": "Coffee",
+      "total": 5000.0
+    },
+    {
+      "descricao": "Gasto Geral (buffer)",
+      "total": 1200.0
+    }
+  ],
+  "gastos_realizados": [
+    {
+      "categoria": "Fixo Dtrip",
+      "descricao": "Gestão da Feira (contrato LGDM)",
+      "status": "Contratado",
+      "margem_seg": "Não",
+      "valor_previsto": 25257.0,
+      "n_parcelas": 3.0,
+      "pago_pj": 16838.0,
+      "pago_eesc": 0.0,
+      "total_pago": 16838.0,
+      "pct_pago": 0.6666666667,
+      "ok": "parcial"
+    },
+    {
+      "categoria": "Fixo Dtrip",
+      "descricao": "Lounge Expo",
+      "status": "Estimado",
+      "margem_seg": "Não",
+      "valor_previsto": 1390.0,
+      "n_parcelas": 1.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Fixo Dtrip",
+      "descricao": "Pórtico de entrada",
+      "status": "Estimado",
+      "margem_seg": "Não",
+      "valor_previsto": 3250.0,
+      "n_parcelas": 1.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Fixo Dtrip",
+      "descricao": "Backdrop de fotos",
+      "status": "Estimado",
+      "margem_seg": "Não",
+      "valor_previsto": 2933.5,
+      "n_parcelas": 1.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Fixo Dtrip",
+      "descricao": "Roda de conversa",
+      "status": "Estimado",
+      "margem_seg": "Não",
+      "valor_previsto": 4442.5,
+      "n_parcelas": 1.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Fixo Dtrip",
+      "descricao": "Impostos",
+      "status": "Estimado",
+      "margem_seg": "Não",
+      "valor_previsto": 10453.5,
+      "n_parcelas": 1.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Fixo Dtrip",
+      "descricao": "Credenciamento",
+      "status": "Estimado",
+      "margem_seg": "Não",
+      "valor_previsto": 8685.5,
+      "n_parcelas": 1.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "Marketing",
+      "status": "Estimado",
+      "margem_seg": "Sim",
+      "valor_previsto": 400.0,
+      "n_parcelas": 1.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "EJUDI",
+      "status": "Estimado",
+      "margem_seg": "Não",
+      "valor_previsto": 2880.0,
+      "n_parcelas": 6.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "Camisetas",
+      "status": "Estimado",
+      "margem_seg": "Sim",
+      "valor_previsto": 2280.0,
+      "n_parcelas": 2.0,
+      "pago_pj": 2280.0,
+      "pago_eesc": 0.0,
+      "total_pago": 2280.0,
+      "pct_pago": 1.0,
+      "ok": "OK"
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "Ambulância",
+      "status": "Estimado",
+      "margem_seg": "Sim",
+      "valor_previsto": 1500.0,
+      "n_parcelas": 1.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "Transporte USP <> UFSCar",
+      "status": "Estimado",
+      "margem_seg": "Sim",
+      "valor_previsto": 300.0,
+      "n_parcelas": 1.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "Etiquetas",
+      "status": "Estimado",
+      "margem_seg": "Sim",
+      "valor_previsto": 130.0,
+      "n_parcelas": 1.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "Crachás",
+      "status": "Estimado",
+      "margem_seg": "Sim",
+      "valor_previsto": 1779.23,
+      "n_parcelas": 1.0,
+      "pago_pj": 1779.23,
+      "pago_eesc": 0.0,
+      "total_pago": 1779.23,
+      "pct_pago": 1.0,
+      "ok": "OK"
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "Bolsas - Brindes",
+      "status": "Contratado",
+      "margem_seg": "Sim",
+      "valor_previsto": 4375.41,
+      "n_parcelas": 2.0,
+      "pago_pj": 4375.41,
+      "pago_eesc": 0,
+      "total_pago": 4375.41,
+      "pct_pago": 0,
+      "ok": "OK"
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "Fotográfos",
+      "status": "Estimado",
+      "margem_seg": "Sim",
+      "valor_previsto": 1800.0,
+      "n_parcelas": 2.0,
+      "pago_pj": 900.0,
+      "pago_eesc": 0,
+      "total_pago": 900.0,
+      "pct_pago": 0.5,
+      "ok": null
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "Cartazes",
+      "status": "Estimado",
+      "margem_seg": "Sim",
+      "valor_previsto": 5.0,
+      "n_parcelas": 1.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "Banners",
+      "status": "Estimado",
+      "margem_seg": "Sim",
+      "valor_previsto": 40.0,
+      "n_parcelas": 1.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "Segurança",
+      "status": "Estimado",
+      "margem_seg": "Sim",
+      "valor_previsto": 480.0,
+      "n_parcelas": 1.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "Coffee",
+      "status": "Estimado",
+      "margem_seg": "Sim",
+      "valor_previsto": 2400.0,
+      "n_parcelas": 1.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "Gasto Geral (buffer)",
+      "status": "Estimado",
+      "margem_seg": "Sim",
+      "valor_previsto": 1000.0,
+      "n_parcelas": 1.0,
+      "pago_pj": 0.0,
+      "pago_eesc": 0.0,
+      "total_pago": 0.0,
+      "pct_pago": 0.0,
+      "ok": "—"
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "Sorteios",
+      "status": "Contratado",
+      "margem_seg": "Sim",
+      "valor_previsto": 921.01,
+      "n_parcelas": 1.0,
+      "pago_pj": 921.01,
+      "pago_eesc": 0,
+      "total_pago": 921.01,
+      "pct_pago": 1.0,
+      "ok": "OK"
+    },
+    {
+      "categoria": "Outros",
+      "descricao": "Credenciais ",
+      "status": "Contratado",
+      "margem_seg": "Sim",
+      "valor_previsto": 213.21,
+      "n_parcelas": 1.0,
+      "pago_pj": 0,
+      "pago_eesc": 213.21,
+      "total_pago": 213.21,
+      "pct_pago": 1.0,
+      "ok": "OK"
+    },
+    {
+      "categoria": null,
+      "descricao": "TOTAL PAGO",
+      "status": null,
+      "margem_seg": null,
+      "valor_previsto": 76915.86,
+      "n_parcelas": 0,
+      "pago_pj": 27093.65,
+      "pago_eesc": 213.21,
+      "total_pago": 27306.86,
+      "pct_pago": 0,
+      "ok": null
+    }
+  ],
+  "fluxo_caixa": {
+    "meses": [
+      "Jul",
+      "Ago",
+      "Set",
+      "Out",
+      "Nov",
+      "Dez"
+    ],
+    "entradas_pj": [
+      47000.0,
+      49750.0,
+      24750.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "entradas_eesc": [
+      0.0,
+      11500.0,
+      30000.0,
+      7500.0,
+      0.0,
+      0.0
+    ],
+    "total_entradas": [
+      47000.0,
+      61250.0,
+      54750.0,
+      7500.0,
+      0.0,
+      0.0
+    ],
+    "saidas_fixos": [
+      8419.0,
+      8419.0,
+      52382.24,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "saidas_estandes": [
+      0.0,
+      0.0,
+      79900.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "saidas_outros": [
+      2520.0,
+      6985.23,
+      24531.42,
+      480.0,
+      0.0,
+      0.0
+    ],
+    "total_saidas": [
+      10939.0,
+      15404.23,
+      156813.66,
+      480.0,
+      0.0,
+      0.0
+    ],
+    "resultado_mes": [
+      36061.0,
+      45845.77,
+      -102063.66,
+      7020.0,
+      0.0,
+      0.0
+    ],
+    "saldo_acumulado": [
+      36061.0,
+      81906.77,
+      -20156.89,
+      -13136.89,
+      -13136.89,
+      -13136.89
+    ]
+  }
+}
