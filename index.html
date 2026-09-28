@@ -4,77 +4,128 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Feira de Mercado — Dashboard Financeiro</title>
+<link rel="icon" href="assets/logo-m.png">
+<script src="config.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
   :root{
-    --bg:#0b1220;
-    --bg2:#111a2e;
-    --panel:#141f38;
-    --panel2:#1a2846;
-    --border:#243356;
-    --text:#e8ecf4;
-    --muted:#8794b1;
-    --accent:#4f8cff;
-    --accent2:#00d1a7;
-    --danger:#ff6b6b;
+    /* Paleta oficial - navy da Feira de Mercado */
+    --bg:#0a1230;
+    --bg2:#0e1738;
+    --panel:#131c3d;
+    --panel2:#1a2450;
+    --border:#272f5b;
+    --border-soft:#1e2748;
+    --text:#eef1f8;
+    --muted:#8a97b8;
+    --accent:#5b7fff;
+    --accent2:#00d9b5;
+    --danger:#ff6b7a;
     --warn:#ffb84d;
-    --ok:#00d1a7;
+    --ok:#00d9b5;
     --gold:#f5c451;
     --silver:#c8d2e0;
     --bronze:#cd7f32;
-    --exec:#4f8cff;
+    --exec:#5b7fff;
     --patro:#a06bff;
+    --navy-deep:#0d1b3a;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
-  body{min-height:100vh;display:grid;grid-template-columns:240px 1fr}
 
-  /* Sidebar */
-  aside{background:linear-gradient(180deg,#0f1a30,#0a1122);border-right:1px solid var(--border);padding:24px 16px;position:sticky;top:0;height:100vh;overflow-y:auto}
-  .brand{display:flex;align-items:center;gap:10px;margin-bottom:32px;padding:4px 6px}
-  .brand-logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:700;color:#0b1220}
-  .brand-txt{font-size:14px;line-height:1.15}
-  .brand-txt b{display:block;font-size:15px}
-  .brand-txt small{color:var(--muted);font-size:11.5px}
-  nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;margin-bottom:4px;transition:all .15s}
+  /* ============ LOGIN OVERLAY ============ */
+  #login-overlay{
+    position:fixed;inset:0;z-index:1000;
+    background:radial-gradient(circle at 30% 20%,#132152 0%,#08102a 60%);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:20px;
+  }
+  .login-card{
+    background:rgba(19,28,61,.85);backdrop-filter:blur(10px);
+    border:1px solid var(--border);border-radius:18px;
+    padding:44px 40px 36px;text-align:center;max-width:440px;width:100%;
+    box-shadow:0 30px 80px rgba(0,0,0,.5);
+  }
+  .login-logo{width:96px;height:96px;border-radius:50%;margin:0 auto 18px;display:block;box-shadow:0 8px 24px rgba(11,20,58,.6)}
+  .login-card h1{margin:0 0 6px;font-size:26px;font-weight:700;letter-spacing:-.01em}
+  .login-card .sub{color:var(--muted);font-size:14px;margin-bottom:24px}
+  .login-card .divider{height:1px;background:var(--border);margin:20px 0}
+  .login-card .instr{color:var(--muted);font-size:13px;margin-bottom:16px;line-height:1.55}
+  .login-card .instr b{color:var(--text)}
+  #signin-button{display:flex;justify-content:center;min-height:44px}
+  #auth-error{color:var(--danger);font-size:13px;margin-top:14px;min-height:16px}
+  .login-foot{margin-top:28px;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .login-foot small{color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+  .login-foot img{max-width:220px;opacity:.85}
+  .login-offline{margin-top:20px;color:var(--muted);font-size:12px}
+  .login-offline a{color:var(--accent);text-decoration:none}
+
+  /* ============ APP LAYOUT ============ */
+  #app{display:none;grid-template-columns:250px 1fr;min-height:100vh}
+  #app.ready{display:grid}
+
+  aside{background:linear-gradient(180deg,#0e173a,#080f28);border-right:1px solid var(--border);padding:22px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+  .brand{display:flex;align-items:center;gap:12px;padding:2px 4px;margin-bottom:26px}
+  .brand-logo{width:44px;height:44px;border-radius:50%;object-fit:cover;box-shadow:0 4px 12px rgba(11,20,58,.6);flex-shrink:0}
+  .brand-txt{line-height:1.2;min-width:0}
+  .brand-txt b{display:block;font-size:15px;letter-spacing:-.01em}
+  .brand-txt small{color:var(--muted);font-size:11.5px;display:block;margin-top:2px}
+
+  nav{flex:1}
+  nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--muted);text-decoration:none;font-size:13.5px;font-weight:500;margin-bottom:4px;transition:all .15s}
   nav a:hover{background:var(--panel);color:var(--text)}
-  nav a.active{background:linear-gradient(90deg,rgba(79,140,255,.15),rgba(0,209,167,.05));color:var(--text);border-left:3px solid var(--accent);padding-left:9px}
-  nav a .icon{width:18px;text-align:center;opacity:.9}
-  .sidebar-foot{position:absolute;bottom:16px;left:16px;right:16px;font-size:11px;color:var(--muted);padding-top:16px;border-top:1px solid var(--border)}
-  .sidebar-foot code{background:var(--panel);padding:2px 6px;border-radius:4px;font-size:10.5px}
+  nav a.active{background:linear-gradient(90deg,rgba(91,127,255,.18),rgba(0,217,181,.06));color:var(--text);border-left:3px solid var(--accent);padding-left:9px}
+  nav a .icon{width:18px;text-align:center;opacity:.9;font-size:13px}
 
-  /* Main */
-  main{padding:28px 36px 60px;overflow-x:hidden;min-width:0}
-  header.page{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;gap:16px;flex-wrap:wrap}
-  header.page h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.01em}
+  .sidebar-user{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12px}
+  .sidebar-user img{width:32px;height:32px;border-radius:50%;flex-shrink:0}
+  .sidebar-user .info{flex:1;min-width:0;line-height:1.25}
+  .sidebar-user .info b{display:block;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sidebar-user .info small{color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+  .sidebar-user button{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:11px;padding:4px;font-family:inherit}
+  .sidebar-user button:hover{color:var(--danger)}
+
+  .sidebar-foot{padding:14px 4px 4px;border-top:1px solid var(--border);margin-top:14px}
+  .sidebar-foot img.ejs-banner{width:100%;border-radius:8px;margin-bottom:10px;opacity:.9}
+  .sidebar-foot .stamp{font-size:11px;color:var(--muted);line-height:1.5}
+  .sidebar-foot .stamp b{color:var(--text);font-size:11.5px}
+  .refresh-btn{background:var(--panel2);border:1px solid var(--border);color:var(--text);width:100%;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:12px;margin-top:8px;font-family:inherit;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+  .refresh-btn:hover{background:var(--panel);border-color:var(--accent)}
+  .refresh-btn:disabled{opacity:.5;cursor:not-allowed}
+  .refresh-btn .spinner{display:none;width:12px;height:12px;border:2px solid var(--muted);border-top-color:var(--text);border-radius:50%;animation:spin 0.8s linear infinite}
+  .refresh-btn.loading .spinner{display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  main{padding:26px 34px 60px;overflow-x:hidden;min-width:0}
+  header.page{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:22px;gap:16px;flex-wrap:wrap}
+  header.page h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.015em}
   header.page .sub{color:var(--muted);font-size:13px;margin-top:4px}
   header.page .stamp{color:var(--muted);font-size:12px;text-align:right}
   header.page .stamp b{color:var(--text)}
 
-  /* Sections */
   section{display:none}
   section.active{display:block}
 
   /* KPI cards */
-  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:24px}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:22px}
   .kpi{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px 18px;position:relative;overflow:hidden}
-  .kpi .label{color:var(--muted);font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
-  .kpi .value{font-size:24px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+  .kpi .label{color:var(--muted);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+  .kpi .value{font-size:24px;font-weight:700;letter-spacing:-.015em;line-height:1.15}
   .kpi .meta{color:var(--muted);font-size:12px;margin-top:6px}
-  .kpi.big .value{font-size:28px}
   .kpi.ok .value{color:var(--ok)}
   .kpi.warn .value{color:var(--warn)}
   .kpi.danger .value{color:var(--danger)}
   .kpi .bar{height:6px;border-radius:4px;background:var(--panel2);margin-top:12px;overflow:hidden}
   .kpi .bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:4px;transition:width .5s}
 
-  /* Panels + charts */
+  /* Panels */
   .grid{display:grid;gap:16px}
   .grid.two{grid-template-columns:1fr 1fr}
   .grid.three{grid-template-columns:1.4fr 1fr 1fr}
   @media(max-width:1100px){.grid.two,.grid.three{grid-template-columns:1fr}}
   .panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px}
-  .panel h3{margin:0 0 14px;font-size:14px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .panel h3{margin:0 0 14px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
   .panel .chart-wrap{position:relative;height:280px}
   .panel .chart-wrap.tall{height:340px}
 
@@ -82,19 +133,18 @@
   .tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);background:var(--panel2)}
   table{width:100%;border-collapse:collapse;font-size:13px;min-width:800px}
   th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
-  th{background:var(--panel);font-weight:600;color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;position:sticky;top:0}
-  tbody tr:hover{background:rgba(79,140,255,.05)}
+  th{background:var(--panel);font-weight:600;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;position:sticky;top:0}
+  tbody tr:hover{background:rgba(91,127,255,.05)}
   td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
   .pill{display:inline-block;padding:3px 9px;border-radius:100px;font-size:11px;font-weight:600}
   .pill.ouro{background:rgba(245,196,81,.18);color:var(--gold)}
   .pill.prata{background:rgba(200,210,224,.18);color:var(--silver)}
   .pill.bronze{background:rgba(205,127,50,.22);color:#f0a76a}
-  .pill.executivo{background:rgba(79,140,255,.18);color:var(--accent)}
+  .pill.executivo{background:rgba(91,127,255,.18);color:var(--accent)}
   .pill.patrocinio{background:rgba(160,107,255,.18);color:var(--patro)}
-  .pill.ok{background:rgba(0,209,167,.18);color:var(--ok)}
+  .pill.ok{background:rgba(0,217,181,.18);color:var(--ok)}
   .pill.warn{background:rgba(255,184,77,.2);color:var(--warn)}
 
-  /* Filters */
   .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
   .filters input,.filters select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:13px;font-family:inherit}
   .filters input:focus,.filters select:focus{outline:none;border-color:var(--accent)}
@@ -104,281 +154,376 @@
   .sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
   @media(max-width:1100px){.sim-grid{grid-template-columns:1fr}}
   .sim-pack{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px}
-  .sim-pack .hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .sim-pack .hdr b{font-size:15px}
+  .sim-pack .hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+  .sim-pack .hdr b{font-size:14px}
   .sim-pack .hdr .meta{color:var(--muted);font-size:12px}
   .sim-pack .row{display:grid;grid-template-columns:1fr 90px;gap:10px;align-items:center;margin-top:8px}
   .sim-pack input[type=range]{width:100%}
   .sim-pack input[type=number]{background:var(--panel);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;font-size:13px;text-align:right;width:100%;font-variant-numeric:tabular-nums}
   .sim-pack .avail{font-size:11px;color:var(--muted);margin-top:4px}
   .sim-pack .avail b{color:var(--text)}
-  .sim-results .big-num{font-size:34px;font-weight:700;letter-spacing:-.02em}
+  .sim-results .big-num{font-size:32px;font-weight:700;letter-spacing:-.02em}
   .sim-results .big-num.ok{color:var(--ok)}
   .sim-results .big-num.danger{color:var(--danger)}
   .sim-results .lbl{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
   .sim-results hr{border:none;border-top:1px solid var(--border);margin:16px 0}
-  .sim-line{display:flex;justify-content:space-between;padding:8px 0;font-size:14px}
+  .sim-line{display:flex;justify-content:space-between;padding:8px 0;font-size:13.5px}
   .sim-line .lbl2{color:var(--muted)}
   .sim-line .v{font-variant-numeric:tabular-nums;font-weight:600}
   .sim-preset{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-  .sim-preset button{flex:1;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:12.5px;font-family:inherit;font-weight:500;transition:all .15s}
+  .sim-preset button{flex:1;min-width:110px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:12.5px;font-family:inherit;font-weight:500;transition:all .15s}
   .sim-preset button:hover{background:var(--panel);border-color:var(--accent)}
-  .sim-preset button.active{background:linear-gradient(90deg,rgba(79,140,255,.2),rgba(0,209,167,.1));border-color:var(--accent);color:var(--text)}
+  .sim-preset button.active{background:linear-gradient(90deg,rgba(91,127,255,.2),rgba(0,217,181,.1));border-color:var(--accent);color:var(--text)}
 
-  .break-even{background:linear-gradient(135deg,rgba(79,140,255,.1),rgba(0,209,167,.05));border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:12px}
-  .break-even h4{margin:0 0 10px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .break-even{background:linear-gradient(135deg,rgba(91,127,255,.1),rgba(0,217,181,.05));border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:12px}
+  .break-even h4{margin:0 0 10px;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
   .break-even .item{display:flex;justify-content:space-between;padding:6px 0;font-size:13.5px}
   .break-even .item .n{font-weight:700;color:var(--accent2);font-variant-numeric:tabular-nums}
 
   .cover-note{font-size:12px;color:var(--muted);margin-top:8px;font-style:italic}
 
-  /* Utility */
   .mono{font-variant-numeric:tabular-nums}
   .muted{color:var(--muted)}
   .text-ok{color:var(--ok)}
   .text-danger{color:var(--danger)}
-  .text-warn{color:var(--warn)}
 
-  /* Mobile */
+  /* Loading state */
+  .loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:900;color:var(--muted)}
+  .loading-screen .spinner-big{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:16px}
+  .loading-screen.hidden{display:none}
+
+  /* Error banner */
+  .err-banner{background:rgba(255,107,122,.1);border:1px solid var(--danger);color:var(--danger);padding:12px 16px;border-radius:10px;margin-bottom:16px;font-size:13px}
+  .err-banner code{background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px}
+
   @media(max-width:800px){
-    body{grid-template-columns:1fr}
-    aside{position:relative;height:auto;padding:16px}
-    .brand{margin-bottom:16px}
+    #app.ready{grid-template-columns:1fr}
+    aside{position:relative;height:auto;padding:14px}
+    .brand{margin-bottom:14px}
     nav{display:flex;gap:6px;overflow-x:auto}
     nav a{white-space:nowrap;margin-bottom:0}
-    .sidebar-foot{display:none}
-    main{padding:20px}
+    .sidebar-user,.sidebar-foot{display:none}
+    main{padding:18px}
   }
 </style>
 </head>
 <body>
 
-<aside>
-  <div class="brand">
-    <div class="brand-logo">FM</div>
-    <div class="brand-txt"><b>Feira de Mercado</b><small>Dashboard Financeiro</small></div>
+<!-- ============ TELA DE LOGIN ============ -->
+<div id="login-overlay">
+  <div class="login-card">
+    <img src="assets/logo-m.png" class="login-logo" alt="Feira de Mercado">
+    <h1>Feira de Mercado</h1>
+    <div class="sub">Dashboard Financeiro</div>
+    <div class="divider"></div>
+    <div class="instr">
+      Acesso restrito a membros da <b>EESC Jr.</b><br>
+      Entre com seu email <b>@eescjr.com.br</b>
+    </div>
+    <div id="signin-button"></div>
+    <div id="auth-error"></div>
+    <div class="login-foot">
+      <small>Organizado por</small>
+      <img src="assets/banner-ejs.png" alt="EESC Jr e Produção Jr">
+    </div>
+    <div class="login-offline" id="offline-link" style="display:none">
+      <a href="#" onclick="usarModoOffline();return false;">Continuar sem login (modo offline)</a>
+    </div>
   </div>
-  <nav>
-    <a href="#visao-geral" class="active" data-tab="visao-geral"><span class="icon">■</span> Visão Geral</a>
-    <a href="#empresas" data-tab="empresas"><span class="icon">◉</span> Empresas Fechadas</a>
-    <a href="#fluxo" data-tab="fluxo"><span class="icon">≈</span> Fluxo de Caixa</a>
-    <a href="#simulador" data-tab="simulador"><span class="icon">⚙</span> Simulador</a>
-    <a href="#gastos" data-tab="gastos"><span class="icon">₹</span> Gastos</a>
-  </nav>
-  <div class="sidebar-foot">
-    Dados atualizados em<br><b id="stamp" style="color:var(--text)">…</b>
-  </div>
-</aside>
+</div>
 
-<main>
-  <header class="page">
-    <div>
-      <h1 id="page-title">Visão Geral</h1>
-      <div class="sub" id="page-sub">Panorama do resultado financeiro do evento</div>
+<!-- ============ TELA DE CARREGAMENTO ============ -->
+<div id="loading-screen" class="loading-screen hidden">
+  <div class="spinner-big"></div>
+  <div id="loading-text">Carregando dados da planilha…</div>
+</div>
+
+<!-- ============ APP PRINCIPAL ============ -->
+<div id="app">
+
+  <aside>
+    <div class="brand">
+      <img src="assets/logo-m.png" class="brand-logo" alt="M">
+      <div class="brand-txt"><b>Feira de Mercado</b><small>Dashboard Financeiro</small></div>
     </div>
-    <div class="stamp">
-      Diretor Financeiro<br><b id="stamp2">Feira de Mercado 2026</b>
-    </div>
-  </header>
+    <nav>
+      <a href="#visao-geral" class="active" data-tab="visao-geral"><span class="icon">■</span> Visão Geral</a>
+      <a href="#empresas" data-tab="empresas"><span class="icon">◉</span> Empresas Fechadas</a>
+      <a href="#fluxo" data-tab="fluxo"><span class="icon">≈</span> Fluxo de Caixa</a>
+      <a href="#simulador" data-tab="simulador"><span class="icon">⚙</span> Simulador</a>
+      <a href="#gastos" data-tab="gastos"><span class="icon">₹</span> Gastos</a>
+    </nav>
 
-  <!-- ============ VISÃO GERAL ============ -->
-  <section id="visao-geral" class="active">
-    <div class="kpi-grid" id="kpis"></div>
-
-    <div class="grid two" style="margin-bottom:16px">
-      <div class="panel">
-        <h3>Vendas por Pacote</h3>
-        <div class="chart-wrap"><canvas id="chart-pacotes"></canvas></div>
+    <div class="sidebar-user" id="user-card" style="display:none">
+      <img id="user-avatar" alt="">
+      <div class="info">
+        <b id="user-name">—</b>
+        <small id="user-email">—</small>
       </div>
-      <div class="panel">
-        <h3>Faturamento por Empresa Júnior</h3>
-        <div class="chart-wrap"><canvas id="chart-ejs"></canvas></div>
-      </div>
+      <button id="signout-btn" title="Sair">Sair</button>
     </div>
 
-    <div class="grid two">
-      <div class="panel">
-        <h3>Previsto × Realizado (gastos por categoria)</h3>
-        <div class="chart-wrap"><canvas id="chart-prev-real"></canvas></div>
-      </div>
-      <div class="panel">
-        <h3>Ocupação por Pacote (cotas vendidas / totais)</h3>
-        <div class="chart-wrap"><canvas id="chart-ocup"></canvas></div>
-      </div>
+    <div class="sidebar-foot">
+      <img src="assets/banner-ejs.png" class="ejs-banner" alt="EJs organizadoras">
+      <div class="stamp">Dados de:<br><b id="stamp">—</b></div>
+      <button id="refresh-btn" class="refresh-btn"><span class="spinner"></span><span>↻ Atualizar dados</span></button>
     </div>
-  </section>
+  </aside>
 
-  <!-- ============ EMPRESAS ============ -->
-  <section id="empresas">
-    <div class="kpi-grid" id="kpis-emp"></div>
-    <div class="panel">
-      <div class="filters">
-        <input type="search" id="filter-emp" placeholder="Buscar empresa…">
-        <select id="filter-pac"><option value="">Todos os pacotes</option></select>
-        <select id="filter-ej"><option value="">Todas as EJs</option></select>
-        <div class="spacer"></div>
-        <span class="muted" style="font-size:12px" id="count-emp"></span>
-      </div>
-      <div class="tbl-wrap">
-        <table id="tbl-emp">
-          <thead>
-            <tr>
-              <th>Empresa</th>
-              <th>EJ</th>
-              <th>Pacote</th>
-              <th class="num">Valor Contratado</th>
-              <th class="num">Custo Estande</th>
-              <th class="num">Margem</th>
-              <th class="num">% Recebido</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-          <tfoot>
-            <tr>
-              <th colspan="3">TOTAL</th>
-              <th class="num" id="t-valor"></th>
-              <th class="num" id="t-custo"></th>
-              <th class="num" id="t-margem"></th>
-              <th class="num" id="t-receb"></th>
-              <th></th>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ FLUXO DE CAIXA ============ -->
-  <section id="fluxo">
-    <div class="kpi-grid" id="kpis-fluxo"></div>
-    <div class="panel" style="margin-bottom:16px">
-      <h3>Saldo acumulado ao longo dos meses</h3>
-      <div class="chart-wrap tall"><canvas id="chart-saldo"></canvas></div>
-      <p class="cover-note" id="fluxo-nota"></p>
-    </div>
-    <div class="panel">
-      <h3>Entradas × Saídas por mês</h3>
-      <div class="chart-wrap tall"><canvas id="chart-fluxo"></canvas></div>
-    </div>
-  </section>
-
-  <!-- ============ SIMULADOR ============ -->
-  <section id="simulador">
-    <div class="kpi-grid" id="kpis-sim"></div>
-
-    <div class="sim-grid">
+  <main>
+    <header class="page">
       <div>
+        <h1 id="page-title">Visão Geral</h1>
+        <div class="sub" id="page-sub">Panorama do resultado financeiro do evento</div>
+      </div>
+      <div class="stamp">
+        Diretor Financeiro<br><b>Feira de Mercado 2026</b>
+      </div>
+    </header>
+
+    <div id="err-container"></div>
+
+    <!-- ============ VISÃO GERAL ============ -->
+    <section id="visao-geral" class="active">
+      <div class="kpi-grid" id="kpis"></div>
+      <div class="grid two" style="margin-bottom:16px">
         <div class="panel">
-          <h3>Cenários rápidos</h3>
-          <div class="sim-preset">
-            <button data-preset="atual" class="active">Só o que já fechou</button>
-            <button data-preset="pessimista">Pessimista</button>
-            <button data-preset="realista">Realista</button>
-            <button data-preset="otimista">Otimista</button>
-            <button data-preset="max">Vender tudo</button>
-          </div>
-          <div id="sim-packs"></div>
-          <p class="muted" style="font-size:12px;margin-top:8px">
-            Ajuste quantas cotas <b>a mais</b> você imagina vender de cada pacote. Os valores já fechados
-            (25 cotas) ficam somados automaticamente ao cenário.
-          </p>
+          <h3>Vendas por Pacote</h3>
+          <div class="chart-wrap"><canvas id="chart-pacotes"></canvas></div>
+        </div>
+        <div class="panel">
+          <h3>Faturamento por Empresa Júnior</h3>
+          <div class="chart-wrap"><canvas id="chart-ejs"></canvas></div>
         </div>
       </div>
+      <div class="grid two">
+        <div class="panel">
+          <h3>Previsto × Realizado (gastos por categoria)</h3>
+          <div class="chart-wrap"><canvas id="chart-prev-real"></canvas></div>
+        </div>
+        <div class="panel">
+          <h3>Ocupação por Pacote (cotas vendidas / totais)</h3>
+          <div class="chart-wrap"><canvas id="chart-ocup"></canvas></div>
+        </div>
+      </div>
+    </section>
 
-      <div>
-        <div class="panel sim-results">
-          <h3>Resultado do cenário</h3>
-          <div class="lbl">Resultado (lucro / prejuízo)</div>
-          <div class="big-num mono" id="sim-resultado">R$ 0</div>
-          <div class="muted" id="sim-status" style="margin-top:2px"></div>
+    <!-- ============ EMPRESAS ============ -->
+    <section id="empresas">
+      <div class="kpi-grid" id="kpis-emp"></div>
+      <div class="panel">
+        <div class="filters">
+          <input type="search" id="filter-emp" placeholder="Buscar empresa…">
+          <select id="filter-pac"><option value="">Todos os pacotes</option></select>
+          <select id="filter-ej"><option value="">Todas as EJs</option></select>
+          <div class="spacer"></div>
+          <span class="muted" style="font-size:12px" id="count-emp"></span>
+        </div>
+        <div class="tbl-wrap">
+          <table id="tbl-emp">
+            <thead>
+              <tr><th>Empresa</th><th>EJ</th><th>Pacote</th><th class="num">Valor Contratado</th><th class="num">Custo Estande</th><th class="num">Margem</th><th class="num">% Recebido</th><th>Status</th></tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+              <tr><th colspan="3">TOTAL</th><th class="num" id="t-valor"></th><th class="num" id="t-custo"></th><th class="num" id="t-margem"></th><th class="num" id="t-receb"></th><th></th></tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
 
-          <hr>
-          <div class="sim-line"><span class="lbl2">Faturamento total do cenário</span><span class="v mono" id="sim-fat"></span></div>
-          <div class="sim-line"><span class="lbl2">Custo dos estandes</span><span class="v mono" id="sim-custo"></span></div>
-          <div class="sim-line"><span class="lbl2">Gastos fixos (independem de vendas)</span><span class="v mono" id="sim-fixos"></span></div>
-          <div class="sim-line"><span class="lbl2">Gasto total do evento</span><span class="v mono" id="sim-total"></span></div>
-          <div class="sim-line"><span class="lbl2">Cotas totais no cenário</span><span class="v mono" id="sim-cotas"></span></div>
+    <!-- ============ FLUXO DE CAIXA ============ -->
+    <section id="fluxo">
+      <div class="kpi-grid" id="kpis-fluxo"></div>
+      <div class="panel" style="margin-bottom:16px">
+        <h3>Saldo acumulado ao longo dos meses</h3>
+        <div class="chart-wrap tall"><canvas id="chart-saldo"></canvas></div>
+        <p class="cover-note" id="fluxo-nota"></p>
+      </div>
+      <div class="panel">
+        <h3>Entradas × Saídas por mês</h3>
+        <div class="chart-wrap tall"><canvas id="chart-fluxo"></canvas></div>
+      </div>
+    </section>
 
-          <div class="break-even">
-            <h4>Break-even — o que ainda falta para sair do zero</h4>
-            <div id="break-even-list"></div>
-            <p class="cover-note" id="be-nota"></p>
+    <!-- ============ SIMULADOR ============ -->
+    <section id="simulador">
+      <div class="kpi-grid" id="kpis-sim"></div>
+      <div class="sim-grid">
+        <div>
+          <div class="panel">
+            <h3>Cenários rápidos</h3>
+            <div class="sim-preset">
+              <button data-preset="atual" class="active">Só o que já fechou</button>
+              <button data-preset="pessimista">Pessimista</button>
+              <button data-preset="realista">Realista</button>
+              <button data-preset="otimista">Otimista</button>
+              <button data-preset="max">Vender tudo</button>
+            </div>
+            <div id="sim-packs"></div>
+            <p class="muted" style="font-size:12px;margin-top:8px">
+              Ajuste quantas cotas <b>a mais</b> você imagina vender de cada pacote. Os valores já fechados
+              ficam somados automaticamente ao cenário.
+            </p>
+          </div>
+        </div>
+        <div>
+          <div class="panel sim-results">
+            <h3>Resultado do cenário</h3>
+            <div class="lbl">Resultado (lucro / prejuízo)</div>
+            <div class="big-num mono" id="sim-resultado">R$ 0</div>
+            <div class="muted" id="sim-status" style="margin-top:2px"></div>
+            <hr>
+            <div class="sim-line"><span class="lbl2">Faturamento total do cenário</span><span class="v mono" id="sim-fat"></span></div>
+            <div class="sim-line"><span class="lbl2">Custo dos estandes</span><span class="v mono" id="sim-custo"></span></div>
+            <div class="sim-line"><span class="lbl2">Gastos fixos (independem de vendas)</span><span class="v mono" id="sim-fixos"></span></div>
+            <div class="sim-line"><span class="lbl2">Gasto total do evento</span><span class="v mono" id="sim-total"></span></div>
+            <div class="sim-line"><span class="lbl2">Cotas totais no cenário</span><span class="v mono" id="sim-cotas"></span></div>
+            <div class="break-even">
+              <h4>Break-even — o que ainda falta para sair do zero</h4>
+              <div id="break-even-list"></div>
+              <p class="cover-note" id="be-nota"></p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============ GASTOS ============ -->
-  <section id="gastos">
-    <div class="grid two" style="margin-bottom:16px">
-      <div class="panel">
-        <h3>Composição do gasto previsto</h3>
-        <div class="chart-wrap"><canvas id="chart-gastos-comp"></canvas></div>
+    <!-- ============ GASTOS ============ -->
+    <section id="gastos">
+      <div class="grid two" style="margin-bottom:16px">
+        <div class="panel">
+          <h3>Composição do gasto previsto</h3>
+          <div class="chart-wrap"><canvas id="chart-gastos-comp"></canvas></div>
+        </div>
+        <div class="panel">
+          <h3>Realizado / Previsto por categoria</h3>
+          <div class="chart-wrap"><canvas id="chart-gastos-cat"></canvas></div>
+        </div>
       </div>
       <div class="panel">
-        <h3>Realizado / Previsto por categoria</h3>
-        <div class="chart-wrap"><canvas id="chart-gastos-cat"></canvas></div>
+        <h3>Detalhe de gastos — pagos vs. pendentes</h3>
+        <div class="filters">
+          <input type="search" id="filter-gasto" placeholder="Buscar…">
+          <select id="filter-status">
+            <option value="">Todos os status</option>
+            <option value="OK">Pagos</option>
+            <option value="parcial">Parciais</option>
+            <option value="—">Pendentes</option>
+          </select>
+        </div>
+        <div class="tbl-wrap">
+          <table id="tbl-gastos">
+            <thead><tr><th>Descrição</th><th>Categoria</th><th class="num">Previsto</th><th class="num">Pago</th><th class="num">% Pago</th><th>Status</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
-    </div>
-
-    <div class="panel">
-      <h3>Detalhe de gastos — pagos vs. pendentes</h3>
-      <div class="filters">
-        <input type="search" id="filter-gasto" placeholder="Buscar…">
-        <select id="filter-status">
-          <option value="">Todos os status</option>
-          <option value="OK">Pagos</option>
-          <option value="parcial">Parciais</option>
-          <option value="—">Pendentes</option>
-        </select>
-      </div>
-      <div class="tbl-wrap">
-        <table id="tbl-gastos">
-          <thead>
-            <tr>
-              <th>Descrição</th>
-              <th>Categoria</th>
-              <th class="num">Previsto</th>
-              <th class="num">Pago</th>
-              <th class="num">% Pago</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-</main>
+    </section>
+  </main>
+</div>
 
 <script>
-// ============ UTILITÁRIOS ============
+// ============================================================
+// FORMATADORES
+// ============================================================
 const BRL = v => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}).format(v||0);
 const BRLc = v => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2,maximumFractionDigits:2}).format(v||0);
 const PCT = v => new Intl.NumberFormat('pt-BR',{style:'percent',maximumFractionDigits:1}).format(v||0);
-const NUM = v => new Intl.NumberFormat('pt-BR').format(v||0);
-const DATE = v => v ? new Date(v).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
 const el = s => document.querySelector(s);
 const els = s => document.querySelectorAll(s);
 
-// Paleta consistente entre gráficos
-const COR = {
-  Executivo:'#4f8cff',
-  Bronze:'#cd7f32',
-  Prata:'#c8d2e0',
-  Ouro:'#f5c451',
-  Patrocínio:'#a06bff',
-};
-const COR_EJ = ['#4f8cff','#00d1a7','#a06bff','#ffb84d'];
+const COR = { Executivo:'#5b7fff', Bronze:'#cd7f32', Prata:'#c8d2e0', Ouro:'#f5c451', 'Patrocínio':'#a06bff' };
+const COR_EJ = ['#5b7fff','#00d9b5','#a06bff','#ffb84d'];
 
-// Chart.js defaults
-Chart.defaults.color = '#8794b1';
-Chart.defaults.borderColor = '#243356';
+Chart.defaults.color = '#8a97b8';
+Chart.defaults.borderColor = '#272f5b';
 Chart.defaults.font.family = "'Inter','Segoe UI',system-ui,sans-serif";
 
-// ============ NAVEGAÇÃO ============
+const CFG = window.FEIRA_CONFIG || {};
+let DATA = null;
+
+// ============================================================
+// AUTENTICAÇÃO (Google Sign-In)
+// ============================================================
+function initGoogleSignIn(){
+  if(!CFG.OAUTH_CLIENT_ID || CFG.OAUTH_CLIENT_ID.includes('COLE_AQUI')){
+    el('#auth-error').innerHTML = 'O Client ID do Google ainda não foi configurado. Ver instruções em <code>LEIA-ME.md</code>.';
+    el('#offline-link').style.display = 'block';
+    return;
+  }
+  if(!window.google || !google.accounts){
+    setTimeout(initGoogleSignIn, 200);
+    return;
+  }
+  try{
+    google.accounts.id.initialize({
+      client_id: CFG.OAUTH_CLIENT_ID,
+      callback: onCredential,
+      auto_select: false,
+      hd: CFG.ALLOWED_DOMAIN, // dica ao Google (não é enforcement)
+    });
+    google.accounts.id.renderButton(
+      el('#signin-button'),
+      { theme:'filled_blue', size:'large', text:'signin_with', shape:'pill', width:280 }
+    );
+  } catch(e){
+    el('#auth-error').textContent = 'Erro ao inicializar login: ' + e.message;
+    el('#offline-link').style.display = 'block';
+  }
+}
+
+function onCredential(response){
+  try{
+    const payload = JSON.parse(atob(response.credential.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+    if(!payload.email_verified){
+      el('#auth-error').textContent = 'Sua conta Google ainda não foi verificada.';
+      return;
+    }
+    const domain = (payload.email || '').split('@')[1] || '';
+    if(domain !== CFG.ALLOWED_DOMAIN){
+      el('#auth-error').innerHTML = `Acesso restrito a <b>@${CFG.ALLOWED_DOMAIN}</b>.<br>Você entrou como <b>${payload.email}</b>.`;
+      return;
+    }
+    sessionStorage.setItem('feira_user', JSON.stringify({
+      email: payload.email, name: payload.name, picture: payload.picture,
+    }));
+    entrarNoApp(payload);
+  } catch(e){
+    el('#auth-error').textContent = 'Erro ao processar login: ' + e.message;
+  }
+}
+
+function usarModoOffline(){
+  sessionStorage.setItem('feira_user', JSON.stringify({email:'offline@local', name:'Modo offline', picture:''}));
+  entrarNoApp({email:'offline@local', name:'Modo offline', picture:''});
+}
+
+function sair(){
+  sessionStorage.removeItem('feira_user');
+  if(window.google && google.accounts) google.accounts.id.disableAutoSelect();
+  location.reload();
+}
+
+function entrarNoApp(user){
+  el('#login-overlay').style.display = 'none';
+  el('#user-card').style.display = 'flex';
+  el('#user-name').textContent = user.name || user.email;
+  el('#user-email').textContent = user.email;
+  if(user.picture){
+    el('#user-avatar').src = user.picture;
+  } else {
+    el('#user-avatar').style.background = 'var(--accent)';
+    el('#user-avatar').style.display = 'inline-block';
+  }
+  el('#app').classList.add('ready');
+  carregarDados();
+}
+
+// ============================================================
+// NAVEGAÇÃO
+// ============================================================
 const TITLES = {
   'visao-geral':['Visão Geral','Panorama do resultado financeiro do evento'],
   'empresas':['Empresas Fechadas','Detalhe de cada cota vendida'],
@@ -395,30 +540,66 @@ function ativar(tab){
   window.scrollTo({top:0});
 }
 els('nav a').forEach(a=>a.addEventListener('click', e=>{e.preventDefault();ativar(a.dataset.tab)}));
-window.addEventListener('load', ()=>{
-  const h = location.hash.slice(1);
-  if(h && TITLES[h]) ativar(h);
-});
 window.addEventListener('hashchange', ()=>{
   const h = location.hash.slice(1);
   if(h && TITLES[h]) ativar(h);
 });
+el('#signout-btn').addEventListener('click', sair);
+el('#refresh-btn').addEventListener('click', ()=>carregarDados(true));
 
-// ============ CARREGA DADOS ============
-let DATA = null;
+// ============================================================
+// CARREGAMENTO DE DADOS
+// ============================================================
+async function carregarDados(force){
+  const loading = el('#loading-screen');
+  loading.classList.remove('hidden');
+  el('#loading-text').textContent = 'Carregando dados…';
+  el('#refresh-btn').classList.add('loading');
+  el('#err-container').innerHTML = '';
 
-async function carregar(){
-  try {
-    const r = await fetch('data.json?_=' + Date.now());
-    DATA = await r.json();
+  try{
+    if(CFG.OFFLINE_MODE || !CFG.SHEET_ID || CFG.SHEET_ID.includes('COLE_AQUI')){
+      // Modo offline - usa data.json
+      const r = await fetch('data.json?_=' + Date.now());
+      if(!r.ok) throw new Error('data.json não encontrado (modo offline)');
+      DATA = await r.json();
+    } else {
+      // Busca direta do Google Sheets
+      el('#loading-text').textContent = 'Buscando dados no Google Sheets…';
+      DATA = await buscarNoSheets();
+    }
+    renderizarTudo();
+    agendarAutoRefresh();
   } catch(e){
-    el('main').innerHTML = '<div class="panel"><h3>Erro ao carregar dados</h3>'+
-      '<p>Não consegui abrir <code>data.json</code>. Se você está abrindo o arquivo direto no navegador (file://), '+
-      'use o script <code>atualizar_dashboard.bat</code> para abrir com servidor local, ou publique no GitHub Pages.</p>'+
-      '<p class="muted">Detalhe: '+e.message+'</p></div>';
-    return;
+    console.error(e);
+    el('#err-container').innerHTML =
+      `<div class="err-banner"><b>Erro ao carregar dados:</b> ${e.message}<br>
+      <small>Verifique: a planilha está compartilhada como "qualquer pessoa com o link"? O SHEET_ID no <code>config.js</code> está correto?</small></div>`;
+    // Tenta fallback offline
+    try {
+      const r = await fetch('data.json?_=' + Date.now());
+      if(r.ok){
+        DATA = await r.json();
+        renderizarTudo();
+      }
+    } catch(_){}
+  } finally {
+    loading.classList.add('hidden');
+    el('#refresh-btn').classList.remove('loading');
   }
-  const dt = new Date(DATA.gerado_em);
+}
+
+let autoRefreshTimer = null;
+function agendarAutoRefresh(){
+  if(autoRefreshTimer) clearTimeout(autoRefreshTimer);
+  const min = CFG.AUTO_REFRESH_MIN || 0;
+  if(min > 0 && CFG.SHEET_ID && !CFG.OFFLINE_MODE){
+    autoRefreshTimer = setTimeout(()=>carregarDados(true), min * 60 * 1000);
+  }
+}
+
+function renderizarTudo(){
+  const dt = DATA.gerado_em ? new Date(DATA.gerado_em) : new Date();
   el('#stamp').textContent = dt.toLocaleString('pt-BR');
   renderKPIs();
   renderPacotes();
@@ -431,7 +612,217 @@ async function carregar(){
   initSimulador();
 }
 
-// ============ VISÃO GERAL ============
+// ============================================================
+// BUSCA NO GOOGLE SHEETS (via gviz)
+// ============================================================
+function colLetter(idx){
+  let s = '', n = idx + 1;
+  while(n > 0){ const r = (n-1) % 26; s = String.fromCharCode(65+r) + s; n = Math.floor((n-1)/26); }
+  return s;
+}
+
+async function fetchGvizSheet(sheetName){
+  const url = `https://docs.google.com/spreadsheets/d/${CFG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&headers=0`;
+  const r = await fetch(url);
+  if(!r.ok) throw new Error(`Aba "${sheetName}" não acessível (HTTP ${r.status}). Confira se a planilha está compartilhada.`);
+  const text = await r.text();
+  const m = text.match(/setResponse\(([\s\S]*)\)/);
+  if(!m) throw new Error(`Resposta inválida da aba "${sheetName}". A planilha está pública?`);
+  const json = JSON.parse(m[1]);
+  if(json.status !== 'ok'){
+    const msg = (json.errors||[]).map(e=>e.detailed_message || e.message).join('; ') || 'erro desconhecido';
+    throw new Error(`Aba "${sheetName}": ${msg}`);
+  }
+  // Monta mapa {coord: valor}. gviz linha 0 = linha 1 da planilha.
+  const cells = {};
+  (json.table.rows || []).forEach((row, rIdx) => {
+    if(!row.c) return;
+    row.c.forEach((c, cIdx) => {
+      if(c && c.v != null){
+        let v = c.v;
+        // Datas vêm como "Date(YYYY,MM,DD,...)". Converter para ISO.
+        if(typeof v === 'string' && v.startsWith('Date(')){
+          const parts = v.slice(5,-1).split(',').map(Number);
+          const d = new Date(parts[0], parts[1]||0, parts[2]||1, parts[3]||0, parts[4]||0, parts[5]||0);
+          v = d.toISOString();
+        }
+        cells[colLetter(cIdx) + (rIdx+1)] = v;
+      }
+    });
+  });
+  return cells;
+}
+
+const toNum = (v, def=0) => {
+  if(v == null || v === '') return def;
+  const n = typeof v === 'number' ? v : parseFloat(String(v).replace(',','.'));
+  return isNaN(n) ? def : n;
+};
+
+async function buscarNoSheets(){
+  // Busca todas as abas em paralelo
+  const [params, vendas, gpr, grl, fluxo] = await Promise.all([
+    fetchGvizSheet('Parâmetros'),
+    fetchGvizSheet('Vendas'),
+    fetchGvizSheet('Gastos Previstos'),
+    fetchGvizSheet('Gastos Realizados'),
+    fetchGvizSheet('Fluxo de Caixa'),
+  ]);
+
+  // ===== PARÂMETROS =====
+  const parametros = {
+    data_base: params.C6, data_evento_1: params.C7, data_evento_2: params.C8,
+    margem_seguranca: toNum(params.C11),
+    saldo_inicial: toNum(params.C12),
+    pct_pago_contratacao: toNum(params.C13),
+    ejs: [params.C18, params.C19],
+    pacotes: [],
+  };
+  for(let r=23; r<=27; r++){
+    const nome = params['B'+r];
+    if(!nome) continue;
+    parametros.pacotes.push({
+      nome,
+      preco_tabela: toNum(params['C'+r]),
+      preco_minimo: toNum(params['D'+r]),
+      cotas_totais: Math.round(toNum(params['E'+r])),
+      custo_estande: toNum(params['F'+r]),
+      margem_unitaria: toNum(params['G'+r]),
+      faturamento_maximo: toNum(params['H'+r]),
+    });
+  }
+
+  // ===== VENDAS =====
+  const vendasArr = [];
+  for(let r=5; r<=50; r++){
+    const empresa = vendas['C'+r];
+    const ej = vendas['B'+r];
+    if(!empresa || !ej) continue;
+    vendasArr.push({
+      ej, empresa,
+      pacote: vendas['D'+r],
+      preco_tabela: toNum(vendas['E'+r]),
+      status: vendas['F'+r],
+      valor_contratado: toNum(vendas['H'+r]),
+      custo_estande: toNum(vendas['I'+r]),
+      margem: toNum(vendas['J'+r]),
+      p1_data: vendas['K'+r], p1_valor: toNum(vendas['L'+r]),
+      p2_data: vendas['M'+r], p2_valor: toNum(vendas['N'+r]),
+      p3_data: vendas['O'+r], p3_valor: toNum(vendas['P'+r]),
+      soma_parcelas: toNum(vendas['Q'+r]),
+      ok: vendas['R'+r],
+    });
+  }
+
+  // ===== GASTOS PREVISTOS =====
+  const meses = ['Jul','Ago','Set','Out','Nov','Dez'];
+  const cols = ['D','E','F','G','H','I'];
+  const gastos_previstos = {
+    fixos_dtrip: { total: toNum(gpr.C22), por_mes: {} },
+    variaveis_estandes: { total: toNum(gpr.C29), por_mes: {} },
+    outros: { total: toNum(gpr.C48), por_mes: {} },
+    total_evento: { total: toNum(gpr.C50), por_mes: {} },
+  };
+  meses.forEach((m,i)=>{
+    gastos_previstos.fixos_dtrip.por_mes[m] = toNum(gpr[cols[i]+'22']);
+    gastos_previstos.variaveis_estandes.por_mes[m] = toNum(gpr[cols[i]+'29']);
+    gastos_previstos.outros.por_mes[m] = toNum(gpr[cols[i]+'48']);
+    gastos_previstos.total_evento.por_mes[m] = toNum(gpr[cols[i]+'50']);
+  });
+
+  const detalhe_previstos = [];
+  for(let r=5; r<=49; r++){
+    const desc = gpr['B'+r]; const total = gpr['C'+r];
+    if(!desc || total == null) continue;
+    const d = String(desc).trim();
+    if(!d || d.startsWith('TOTAL') || d.startsWith('GASTOS ') || d === 'OUTROS GASTOS') continue;
+    detalhe_previstos.push({descricao: d, total: toNum(total)});
+  }
+
+  // ===== GASTOS REALIZADOS =====
+  const gastos_realizados = [];
+  for(let r=5; r<=40; r++){
+    const desc = grl['C'+r];
+    if(!desc) continue;
+    gastos_realizados.push({
+      categoria: grl['B'+r], descricao: desc, status: grl['D'+r],
+      margem_seg: grl['E'+r],
+      valor_previsto: toNum(grl['F'+r]),
+      n_parcelas: toNum(grl['G'+r]),
+      pago_pj: toNum(grl['H'+r]),
+      pago_eesc: toNum(grl['J'+r]),
+      total_pago: toNum(grl['L'+r]),
+      pct_pago: toNum(grl['M'+r]),
+      ok: grl['N'+r],
+    });
+  }
+  const total_pago = toNum(grl.L33);
+
+  // ===== FLUXO DE CAIXA (colunas C-H) =====
+  const cf = ['C','D','E','F','G','H'];
+  const fluxo_caixa = {
+    meses,
+    entradas_pj: cf.map(c=>toNum(fluxo[c+'6'])),
+    entradas_eesc: cf.map(c=>toNum(fluxo[c+'7'])),
+    total_entradas: cf.map(c=>toNum(fluxo[c+'8'])),
+    saidas_fixos: cf.map(c=>toNum(fluxo[c+'11'])),
+    saidas_estandes: cf.map(c=>toNum(fluxo[c+'12'])),
+    saidas_outros: cf.map(c=>toNum(fluxo[c+'13'])),
+    total_saidas: cf.map(c=>toNum(fluxo[c+'14'])),
+    resultado_mes: cf.map(c=>toNum(fluxo[c+'16'])),
+    saldo_acumulado: cf.map(c=>toNum(fluxo[c+'17'])),
+  };
+
+  // ===== KPIs AGREGADOS =====
+  const fechadas = vendasArr.filter(v=>v.status === 'Fechado');
+  const faturamento_fechado = fechadas.reduce((s,v)=>s+v.valor_contratado, 0);
+  const custo_estandes_fechados = fechadas.reduce((s,v)=>s+v.custo_estande, 0);
+  const margem_fechada = fechadas.reduce((s,v)=>s+v.margem, 0);
+  const cotas_vendidas = fechadas.length;
+  const cotas_totais = parametros.pacotes.reduce((s,p)=>s+p.cotas_totais, 0);
+  const gastos_fixos_independentes = gastos_previstos.fixos_dtrip.total + gastos_previstos.outros.total;
+  const gasto_total_previsto = gastos_previstos.total_evento.total;
+  const resultado_hoje = faturamento_fechado - gasto_total_previsto;
+  const equilibrio_pct = gasto_total_previsto ? faturamento_fechado/gasto_total_previsto : 0;
+  const caixa_pior_mes = fluxo_caixa.saldo_acumulado.length ? Math.min(...fluxo_caixa.saldo_acumulado) : 0;
+
+  const faturamento_por_ej = {};
+  fechadas.forEach(v => faturamento_por_ej[v.ej] = (faturamento_por_ej[v.ej]||0) + v.valor_contratado);
+
+  const vendas_por_pacote = {};
+  parametros.pacotes.forEach(p => vendas_por_pacote[p.nome] = {
+    fechados:0, faturamento:0, cotas_totais:p.cotas_totais,
+    preco_tabela:p.preco_tabela, custo_estande:p.custo_estande, margem_unitaria:p.margem_unitaria,
+  });
+  fechadas.forEach(v => {
+    if(vendas_por_pacote[v.pacote]){
+      vendas_por_pacote[v.pacote].fechados++;
+      vendas_por_pacote[v.pacote].faturamento += v.valor_contratado;
+    }
+  });
+
+  const kpis = {
+    faturamento_fechado, custo_estandes_fechados, margem_fechada,
+    cotas_vendidas, cotas_totais,
+    gasto_total_previsto, gastos_fixos_independentes,
+    resultado_hoje, equilibrio_pct,
+    total_pago_realizado: total_pago,
+    caixa_pior_mes,
+    faturamento_maximo_tabela: parametros.pacotes.reduce((s,p)=>s+p.faturamento_maximo, 0),
+  };
+
+  return {
+    gerado_em: new Date().toISOString(),
+    parametros, kpis, vendas: vendasArr,
+    vendas_por_pacote, faturamento_por_ej,
+    gastos_previstos, detalhe_previstos, gastos_realizados,
+    fluxo_caixa,
+  };
+}
+
+// ============================================================
+// RENDERIZAÇÃO
+// ============================================================
 function kpi(label, value, meta, cls, barPct){
   return `<div class="kpi ${cls||''}">
     <div class="label">${label}</div>
@@ -440,6 +831,12 @@ function kpi(label, value, meta, cls, barPct){
     ${barPct!=null?`<div class="bar"><span style="width:${Math.min(100,Math.max(0,barPct*100))}%"></span></div>`:''}
   </div>`;
 }
+
+function destroyChart(id){
+  const c = Chart.getChart(id);
+  if(c) c.destroy();
+}
+
 function renderKPIs(){
   const k = DATA.kpis;
   const resultCls = k.resultado_hoje >= 0 ? 'ok' : 'danger';
@@ -455,50 +852,40 @@ function renderKPIs(){
 }
 
 function renderPacotes(){
+  destroyChart('chart-pacotes');
   const rows = Object.entries(DATA.vendas_por_pacote);
+  const total = rows.reduce((s,[,v])=>s+v.faturamento,0);
   new Chart(el('#chart-pacotes'), {
-    type: 'doughnut',
-    data: {
-      labels: rows.map(([k])=>k),
-      datasets: [{
-        data: rows.map(([,v])=>v.faturamento),
-        backgroundColor: rows.map(([k])=>COR[k]||'#4f8cff'),
-        borderColor:'#141f38', borderWidth:2,
-      }]
-    },
-    options:{
-      cutout:'62%', maintainAspectRatio:false,
-      plugins:{
-        legend:{position:'right', labels:{padding:12,usePointStyle:true,pointStyle:'circle',boxWidth:8}},
-        tooltip:{callbacks:{label:c=>` ${c.label}: ${BRL(c.parsed)} (${c.parsed?PCT(c.parsed/rows.reduce((s,[,v])=>s+v.faturamento,0)):'0%'})`}}
-      }
-    }
+    type:'doughnut',
+    data:{ labels: rows.map(([k])=>k), datasets:[{
+      data: rows.map(([,v])=>v.faturamento),
+      backgroundColor: rows.map(([k])=>COR[k]||'#5b7fff'),
+      borderColor:'#131c3d', borderWidth:2,
+    }]},
+    options:{cutout:'62%', maintainAspectRatio:false,
+      plugins:{legend:{position:'right', labels:{padding:12,usePointStyle:true,pointStyle:'circle',boxWidth:8}},
+        tooltip:{callbacks:{label:c=>` ${c.label}: ${BRL(c.parsed)} (${total?PCT(c.parsed/total):'0%'})`}}}}
   });
 }
 
 function renderEJs(){
+  destroyChart('chart-ejs');
   const rows = Object.entries(DATA.faturamento_por_ej);
   new Chart(el('#chart-ejs'), {
-    type: 'doughnut',
-    data: {
-      labels: rows.map(([k])=>k),
-      datasets: [{
-        data: rows.map(([,v])=>v),
-        backgroundColor: rows.map((_,i)=>COR_EJ[i%COR_EJ.length]),
-        borderColor:'#141f38', borderWidth:2,
-      }]
-    },
-    options:{
-      cutout:'62%', maintainAspectRatio:false,
-      plugins:{
-        legend:{position:'right', labels:{padding:12,usePointStyle:true,pointStyle:'circle',boxWidth:8}},
-        tooltip:{callbacks:{label:c=>` ${c.label}: ${BRL(c.parsed)}`}}
-      }
-    }
+    type:'doughnut',
+    data:{ labels: rows.map(([k])=>k), datasets:[{
+      data: rows.map(([,v])=>v),
+      backgroundColor: rows.map((_,i)=>COR_EJ[i%COR_EJ.length]),
+      borderColor:'#131c3d', borderWidth:2,
+    }]},
+    options:{cutout:'62%', maintainAspectRatio:false,
+      plugins:{legend:{position:'right', labels:{padding:12,usePointStyle:true,pointStyle:'circle',boxWidth:8}},
+        tooltip:{callbacks:{label:c=>` ${c.label}: ${BRL(c.parsed)}`}}}}
   });
 }
 
 function renderPrevReal(){
+  destroyChart('chart-prev-real');
   const cats = [
     ['Fixos Dtrip', DATA.gastos_previstos.fixos_dtrip.total, DATA.gastos_realizados.filter(g=>g.categoria==='Fixo Dtrip').reduce((s,g)=>s+g.total_pago,0)],
     ['Estandes',    DATA.gastos_previstos.variaveis_estandes.total, 0],
@@ -506,39 +893,30 @@ function renderPrevReal(){
   ];
   new Chart(el('#chart-prev-real'),{
     type:'bar',
-    data:{
-      labels: cats.map(c=>c[0]),
-      datasets:[
-        {label:'Previsto', data:cats.map(c=>c[1]), backgroundColor:'#4f8cff', borderRadius:6},
-        {label:'Realizado', data:cats.map(c=>c[2]), backgroundColor:'#00d1a7', borderRadius:6},
-      ]
-    },
-    options:{
-      maintainAspectRatio:false,
-      scales:{y:{ticks:{callback:v=>BRL(v)}, grid:{color:'#243356'}}, x:{grid:{display:false}}},
+    data:{labels:cats.map(c=>c[0]),datasets:[
+      {label:'Previsto',data:cats.map(c=>c[1]),backgroundColor:'#5b7fff',borderRadius:6},
+      {label:'Realizado',data:cats.map(c=>c[2]),backgroundColor:'#00d9b5',borderRadius:6},
+    ]},
+    options:{maintainAspectRatio:false,
+      scales:{y:{ticks:{callback:v=>BRL(v)},grid:{color:'#272f5b'}},x:{grid:{display:false}}},
       plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle'}},
-        tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${BRL(c.parsed.y)}`}}}
-    }
+        tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${BRL(c.parsed.y)}`}}}}
   });
 }
 
 function renderOcup(){
+  destroyChart('chart-ocup');
   const rows = Object.entries(DATA.vendas_por_pacote);
   new Chart(el('#chart-ocup'),{
     type:'bar',
-    data:{
-      labels: rows.map(([k])=>k),
-      datasets:[
-        {label:'Vendidas', data:rows.map(([,v])=>v.fechados), backgroundColor:rows.map(([k])=>COR[k]||'#4f8cff'), borderRadius:6},
-        {label:'Disponíveis', data:rows.map(([,v])=>Math.max(0,v.cotas_totais-v.fechados)), backgroundColor:'#243356', borderRadius:6},
-      ]
-    },
-    options:{
-      indexAxis:'y', maintainAspectRatio:false,
-      scales:{x:{stacked:true, grid:{color:'#243356'}}, y:{stacked:true, grid:{display:false}}},
+    data:{labels:rows.map(([k])=>k),datasets:[
+      {label:'Vendidas',data:rows.map(([,v])=>v.fechados),backgroundColor:rows.map(([k])=>COR[k]||'#5b7fff'),borderRadius:6},
+      {label:'Disponíveis',data:rows.map(([,v])=>Math.max(0,v.cotas_totais-v.fechados)),backgroundColor:'#272f5b',borderRadius:6},
+    ]},
+    options:{indexAxis:'y',maintainAspectRatio:false,
+      scales:{x:{stacked:true,grid:{color:'#272f5b'}},y:{stacked:true,grid:{display:false}}},
       plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle'}},
-        tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.x} cotas`}}}
-    }
+        tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.x} cotas`}}}}
   });
 }
 
@@ -547,7 +925,6 @@ function renderEmpresas(){
   const fechadas = DATA.vendas.filter(v=>v.status==='Fechado');
   const totCotas = DATA.kpis.cotas_totais;
   const cotasVend = fechadas.length;
-
   const totFat = fechadas.reduce((s,v)=>s+v.valor_contratado,0);
   const totRec = fechadas.reduce((s,v)=>s+v.soma_parcelas,0);
   const pctReceb = totFat ? totRec/totFat : 0;
@@ -559,7 +936,6 @@ function renderEmpresas(){
     kpi('% Recebido', PCT(pctReceb), 'Parcelas já quitadas', pctReceb>=1?'ok':(pctReceb>=0.5?'warn':'danger'), pctReceb),
   ].join('');
 
-  // Popula filtros
   const pacotes = [...new Set(fechadas.map(v=>v.pacote))];
   const ejs = [...new Set(fechadas.map(v=>v.ej))];
   el('#filter-pac').innerHTML = '<option value="">Todos os pacotes</option>' + pacotes.map(p=>`<option>${p}</option>`).join('');
@@ -567,216 +943,157 @@ function renderEmpresas(){
 
   function apply(){
     const q = el('#filter-emp').value.toLowerCase().trim();
-    const pf = el('#filter-pac').value;
-    const ef = el('#filter-ej').value;
+    const pf = el('#filter-pac').value, ef = el('#filter-ej').value;
     const filt = fechadas.filter(v =>
       (!q || v.empresa.toLowerCase().includes(q)) &&
-      (!pf || v.pacote===pf) &&
-      (!ef || v.ej===ef)
+      (!pf || v.pacote===pf) && (!ef || v.ej===ef)
     );
-    const tbody = el('#tbl-emp tbody');
-    tbody.innerHTML = filt.map(v=>{
+    el('#tbl-emp tbody').innerHTML = filt.map(v=>{
       const pct = v.valor_contratado ? v.soma_parcelas/v.valor_contratado : 0;
       const okCls = v.ok==='OK' ? 'ok' : 'warn';
       const okLbl = v.ok==='OK' ? 'Pago' : 'Pendente';
+      const pacClass = (v.pacote||'').toLowerCase().replace(/[^a-z]/g,'');
       return `<tr>
         <td><b>${v.empresa}</b></td>
         <td class="muted">${v.ej}</td>
-        <td><span class="pill ${(v.pacote||'').toLowerCase()}">${v.pacote}</span></td>
+        <td><span class="pill ${pacClass}">${v.pacote}</span></td>
         <td class="num">${BRL(v.valor_contratado)}</td>
         <td class="num muted">${BRL(v.custo_estande)}</td>
         <td class="num"><b>${BRL(v.margem)}</b></td>
         <td class="num">${PCT(pct)}</td>
         <td><span class="pill ${okCls}">${okLbl}</span></td>
       </tr>`;
-    }).join('') || '<tr><td colspan="8" class="muted" style="text-align:center;padding:24px">Nenhuma empresa encontrada</td></tr>';
+    }).join('') || '<tr><td colspan="8" class="muted" style="text-align:center;padding:24px">Nenhuma empresa</td></tr>';
     el('#count-emp').textContent = `${filt.length} empresa(s)`;
-    const fv = filt.reduce((s,v)=>s+v.valor_contratado,0);
-    const fc = filt.reduce((s,v)=>s+v.custo_estande,0);
-    const fm = filt.reduce((s,v)=>s+v.margem,0);
-    const fr = filt.reduce((s,v)=>s+v.soma_parcelas,0);
-    el('#t-valor').textContent = BRL(fv);
-    el('#t-custo').textContent = BRL(fc);
-    el('#t-margem').textContent = BRL(fm);
-    el('#t-receb').textContent = fv?PCT(fr/fv):'—';
+    const fv=filt.reduce((s,v)=>s+v.valor_contratado,0), fc=filt.reduce((s,v)=>s+v.custo_estande,0),
+          fm=filt.reduce((s,v)=>s+v.margem,0), fr=filt.reduce((s,v)=>s+v.soma_parcelas,0);
+    el('#t-valor').textContent = BRL(fv); el('#t-custo').textContent = BRL(fc);
+    el('#t-margem').textContent = BRL(fm); el('#t-receb').textContent = fv?PCT(fr/fv):'—';
   }
-  ['#filter-emp','#filter-pac','#filter-ej'].forEach(s=>el(s).addEventListener('input',apply));
+  ['#filter-emp','#filter-pac','#filter-ej'].forEach(s=>{
+    const e = el(s);
+    e.replaceWith(e.cloneNode(true));
+  });
+  ['#filter-emp','#filter-pac','#filter-ej'].forEach(s=>el(s).addEventListener('input', apply));
   apply();
 }
 
-// ============ FLUXO DE CAIXA ============
+// ============ FLUXO ============
 function renderFluxo(){
+  destroyChart('chart-saldo'); destroyChart('chart-fluxo');
   const f = DATA.fluxo_caixa;
   const piorMes = f.meses[f.saldo_acumulado.indexOf(Math.min(...f.saldo_acumulado))];
   const resultFinal = f.saldo_acumulado[f.saldo_acumulado.length-1];
-
   el('#kpis-fluxo').innerHTML = [
     kpi('Total de Entradas', BRL(f.total_entradas.reduce((s,v)=>s+v,0))),
     kpi('Total de Saídas', BRL(f.total_saidas.reduce((s,v)=>s+v,0))),
     kpi('Resultado Final (Dez)', BRL(resultFinal), resultFinal>=0?'Saldo positivo':'Saldo negativo', resultFinal>=0?'ok':'danger'),
     kpi('Pior Mês do Caixa', BRL(Math.min(...f.saldo_acumulado)), `Ocorre em ${piorMes}`, Math.min(...f.saldo_acumulado)<0?'danger':'ok'),
   ].join('');
-
   const piorSaldo = Math.min(...f.saldo_acumulado);
   el('#fluxo-nota').textContent = piorSaldo<0
-    ? `As EJs precisam garantir ${BRL(Math.abs(piorSaldo))} de caixa em ${piorMes} para cobrir a diferença entre pagamentos e recebimentos.`
+    ? `As EJs precisam garantir ${BRL(Math.abs(piorSaldo))} de caixa em ${piorMes} para cobrir a diferença.`
     : 'O caixa se mantém positivo em todos os meses.';
 
-  new Chart(el('#chart-saldo'),{
-    type:'line',
-    data:{
-      labels:f.meses,
-      datasets:[{
-        label:'Saldo acumulado',
-        data:f.saldo_acumulado,
-        borderColor:'#4f8cff',
-        backgroundColor:ctx=>{
-          const {ctx:c,chartArea:a} = ctx.chart;
-          if(!a) return 'rgba(79,140,255,0.1)';
-          const g = c.createLinearGradient(0,a.top,0,a.bottom);
-          g.addColorStop(0,'rgba(79,140,255,0.35)');
-          g.addColorStop(1,'rgba(79,140,255,0)');
-          return g;
-        },
-        fill:true, tension:0.35, borderWidth:2.5,
-        pointRadius:5, pointBackgroundColor:'#4f8cff', pointBorderColor:'#0b1220', pointBorderWidth:2,
-      }]
-    },
-    options:{
-      maintainAspectRatio:false,
-      scales:{y:{ticks:{callback:v=>BRL(v)},grid:{color:'#243356'}}, x:{grid:{display:false}}},
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{label:c=>` Saldo: ${BRL(c.parsed.y)}`}},
-      }
-    }
-  });
+  new Chart(el('#chart-saldo'),{type:'line',
+    data:{labels:f.meses,datasets:[{
+      label:'Saldo acumulado',data:f.saldo_acumulado,borderColor:'#5b7fff',
+      backgroundColor:ctx=>{const {ctx:c,chartArea:a}=ctx.chart; if(!a) return 'rgba(91,127,255,.1)';
+        const g=c.createLinearGradient(0,a.top,0,a.bottom);
+        g.addColorStop(0,'rgba(91,127,255,.35)');g.addColorStop(1,'rgba(91,127,255,0)');return g;},
+      fill:true,tension:.35,borderWidth:2.5,
+      pointRadius:5,pointBackgroundColor:'#5b7fff',pointBorderColor:'#0a1230',pointBorderWidth:2,
+    }]},
+    options:{maintainAspectRatio:false,
+      scales:{y:{ticks:{callback:v=>BRL(v)},grid:{color:'#272f5b'}},x:{grid:{display:false}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` Saldo: ${BRL(c.parsed.y)}`}}}}});
 
-  new Chart(el('#chart-fluxo'),{
-    type:'bar',
-    data:{
-      labels:f.meses,
-      datasets:[
-        {label:'Entradas', data:f.total_entradas, backgroundColor:'#00d1a7', borderRadius:6},
-        {label:'Saídas',   data:f.total_saidas.map(v=>-v), backgroundColor:'#ff6b6b', borderRadius:6},
-      ]
-    },
-    options:{
-      maintainAspectRatio:false,
-      scales:{y:{ticks:{callback:v=>BRL(Math.abs(v))},grid:{color:'#243356'}}, x:{grid:{display:false}}},
-      plugins:{
-        legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle'}},
-        tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${BRL(Math.abs(c.parsed.y))}`}}
-      }
-    }
-  });
+  new Chart(el('#chart-fluxo'),{type:'bar',
+    data:{labels:f.meses,datasets:[
+      {label:'Entradas',data:f.total_entradas,backgroundColor:'#00d9b5',borderRadius:6},
+      {label:'Saídas',data:f.total_saidas.map(v=>-v),backgroundColor:'#ff6b7a',borderRadius:6},
+    ]},
+    options:{maintainAspectRatio:false,
+      scales:{y:{ticks:{callback:v=>BRL(Math.abs(v))},grid:{color:'#272f5b'}},x:{grid:{display:false}}},
+      plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle'}},
+        tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${BRL(Math.abs(c.parsed.y))}`}}}}});
 }
 
 // ============ GASTOS ============
 function renderGastos(){
+  destroyChart('chart-gastos-comp'); destroyChart('chart-gastos-cat');
   const g = DATA.gastos_previstos;
-
-  new Chart(el('#chart-gastos-comp'),{
-    type:'doughnut',
-    data:{
-      labels:['Fixos Dtrip','Estandes (Variáveis)','Outros'],
-      datasets:[{
-        data:[g.fixos_dtrip.total, g.variaveis_estandes.total, g.outros.total],
-        backgroundColor:['#4f8cff','#f5c451','#00d1a7'],
-        borderColor:'#141f38', borderWidth:2,
-      }]
-    },
-    options:{
-      cutout:'62%', maintainAspectRatio:false,
-      plugins:{
-        legend:{position:'right',labels:{padding:12,usePointStyle:true,pointStyle:'circle',boxWidth:8}},
-        tooltip:{callbacks:{label:c=>` ${c.label}: ${BRL(c.parsed)}`}}
-      }
-    }
-  });
+  new Chart(el('#chart-gastos-comp'),{type:'doughnut',
+    data:{labels:['Fixos Dtrip','Estandes (Variáveis)','Outros'],datasets:[{
+      data:[g.fixos_dtrip.total,g.variaveis_estandes.total,g.outros.total],
+      backgroundColor:['#5b7fff','#f5c451','#00d9b5'],borderColor:'#131c3d',borderWidth:2}]},
+    options:{cutout:'62%',maintainAspectRatio:false,
+      plugins:{legend:{position:'right',labels:{padding:12,usePointStyle:true,pointStyle:'circle',boxWidth:8}},
+        tooltip:{callbacks:{label:c=>` ${c.label}: ${BRL(c.parsed)}`}}}}});
 
   const cats = [
-    {n:'Fixos Dtrip', prev:g.fixos_dtrip.total, pago:DATA.gastos_realizados.filter(x=>x.categoria==='Fixo Dtrip').reduce((s,x)=>s+x.total_pago,0)},
-    {n:'Estandes',    prev:g.variaveis_estandes.total, pago:0},
-    {n:'Outros',      prev:g.outros.total, pago:DATA.gastos_realizados.filter(x=>x.categoria==='Outros').reduce((s,x)=>s+x.total_pago,0)},
+    {n:'Fixos Dtrip',prev:g.fixos_dtrip.total,pago:DATA.gastos_realizados.filter(x=>x.categoria==='Fixo Dtrip').reduce((s,x)=>s+x.total_pago,0)},
+    {n:'Estandes',prev:g.variaveis_estandes.total,pago:0},
+    {n:'Outros',prev:g.outros.total,pago:DATA.gastos_realizados.filter(x=>x.categoria==='Outros').reduce((s,x)=>s+x.total_pago,0)},
   ];
-  new Chart(el('#chart-gastos-cat'),{
-    type:'bar',
-    data:{
-      labels:cats.map(c=>c.n),
-      datasets:[
-        {label:'Pago', data:cats.map(c=>c.pago), backgroundColor:'#00d1a7', borderRadius:6, stack:'s'},
-        {label:'A pagar', data:cats.map(c=>Math.max(0,c.prev-c.pago)), backgroundColor:'#243356', borderRadius:6, stack:'s'},
-      ]
-    },
-    options:{
-      maintainAspectRatio:false,
-      scales:{x:{stacked:true,grid:{display:false}}, y:{stacked:true,ticks:{callback:v=>BRL(v)},grid:{color:'#243356'}}},
+  new Chart(el('#chart-gastos-cat'),{type:'bar',
+    data:{labels:cats.map(c=>c.n),datasets:[
+      {label:'Pago',data:cats.map(c=>c.pago),backgroundColor:'#00d9b5',borderRadius:6,stack:'s'},
+      {label:'A pagar',data:cats.map(c=>Math.max(0,c.prev-c.pago)),backgroundColor:'#272f5b',borderRadius:6,stack:'s'},
+    ]},
+    options:{maintainAspectRatio:false,
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>BRL(v)},grid:{color:'#272f5b'}}},
       plugins:{legend:{position:'bottom',labels:{usePointStyle:true,pointStyle:'circle'}},
-        tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${BRL(c.parsed.y)}`}}}
-    }
-  });
+        tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${BRL(c.parsed.y)}`}}}}});
 
-  const tbody = el('#tbl-gastos tbody');
-  function apply(){
+  function applyG(){
     const q = el('#filter-gasto').value.toLowerCase().trim();
     const sf = el('#filter-status').value;
     const filt = DATA.gastos_realizados.filter(g =>
       (!q || (g.descricao||'').toLowerCase().includes(q)) &&
       (!sf || (g.ok||'').includes(sf))
     );
-    tbody.innerHTML = filt.map(g=>{
+    el('#tbl-gastos tbody').innerHTML = filt.map(g=>{
       const cls = g.ok==='OK'?'ok':(g.ok==='parcial'?'warn':'');
       const lbl = g.ok==='OK'?'Pago':(g.ok==='parcial'?'Parcial':'Pendente');
       return `<tr>
-        <td>${g.descricao}</td>
-        <td class="muted">${g.categoria||''}</td>
-        <td class="num">${BRLc(g.valor_previsto)}</td>
-        <td class="num">${BRLc(g.total_pago)}</td>
+        <td>${g.descricao}</td><td class="muted">${g.categoria||''}</td>
+        <td class="num">${BRLc(g.valor_previsto)}</td><td class="num">${BRLc(g.total_pago)}</td>
         <td class="num">${PCT(g.pct_pago)}</td>
         <td>${cls?`<span class="pill ${cls}">${lbl}</span>`:`<span class="muted">${lbl}</span>`}</td>
       </tr>`;
     }).join('') || '<tr><td colspan="6" class="muted" style="text-align:center;padding:24px">Nenhum item</td></tr>';
   }
-  el('#filter-gasto').addEventListener('input', apply);
-  el('#filter-status').addEventListener('change', apply);
-  apply();
+  ['#filter-gasto','#filter-status'].forEach(s=>{const e=el(s);e.replaceWith(e.cloneNode(true))});
+  el('#filter-gasto').addEventListener('input',applyG);
+  el('#filter-status').addEventListener('change',applyG);
+  applyG();
 }
 
 // ============ SIMULADOR ============
 const PRESETS = {
-  atual:      { Executivo:0, Bronze:0, Prata:0, Ouro:0, Patrocínio:0 },
-  pessimista: { Executivo:2, Bronze:0, Prata:0, Ouro:0, Patrocínio:3 },
-  realista:   { Executivo:5, Bronze:0, Prata:0, Ouro:0, Patrocínio:8 },
-  otimista:   { Executivo:10, Bronze:0, Prata:0, Ouro:0, Patrocínio:15 },
-  max:        null, // preenchido em initSimulador
+  atual: {}, pessimista:{Executivo:2,Patrocínio:3}, realista:{Executivo:5,Patrocínio:8},
+  otimista:{Executivo:10,Patrocínio:15}, max:null,
 };
-
 let SIM_STATE = {};
 
 function initSimulador(){
   const pacs = DATA.parametros.pacotes;
-
-  // MAX = todas as cotas disponíveis
   const max = {};
   pacs.forEach(p=>{
     const jaFechado = DATA.vendas_por_pacote[p.nome]?.fechados || 0;
     max[p.nome] = Math.max(0, p.cotas_totais - jaFechado);
   });
   PRESETS.max = max;
-
-  // Ajusta os presets pra respeitar o máximo disponível
   Object.keys(PRESETS).forEach(k=>{
-    const preset = PRESETS[k];
+    const preset = PRESETS[k] || {};
     pacs.forEach(p=>{
       preset[p.nome] = Math.min(preset[p.nome]||0, max[p.nome]);
     });
+    PRESETS[k] = preset;
   });
-
-  // Estado inicial: só o já fechado
   SIM_STATE = {...PRESETS.atual};
 
-  // KPIs do simulador (fixos)
   el('#kpis-sim').innerHTML = [
     kpi('Já Fechado', BRL(DATA.kpis.faturamento_fechado), `${DATA.kpis.cotas_vendidas} cotas`),
     kpi('Gastos Fixos', BRL(DATA.kpis.gastos_fixos_independentes), 'Não dependem de vendas'),
@@ -784,13 +1101,13 @@ function initSimulador(){
     kpi('Potencial Máx (tabela)', BRL(DATA.kpis.faturamento_maximo_tabela), 'Se todas as cotas fossem vendidas'),
   ].join('');
 
-  // Cards de cada pacote
   el('#sim-packs').innerHTML = pacs.map(p=>{
     const disponivel = max[p.nome];
     const fechado = DATA.vendas_por_pacote[p.nome]?.fechados || 0;
+    const pacClass = p.nome.toLowerCase().replace(/[^a-z]/g,'');
     return `<div class="sim-pack" data-pac="${p.nome}">
       <div class="hdr">
-        <b><span class="pill ${p.nome.toLowerCase()}">${p.nome}</span> ${BRLc(p.preco_tabela)}</b>
+        <b><span class="pill ${pacClass}">${p.nome}</span> ${BRLc(p.preco_tabela)}</b>
         <span class="meta">Margem unit.: ${BRL(p.margem_unitaria)}</span>
       </div>
       <div class="row">
@@ -801,7 +1118,6 @@ function initSimulador(){
     </div>`;
   }).join('');
 
-  // Vincula sliders e inputs
   els('input[data-slider]').forEach(s=>s.addEventListener('input',()=>{
     const p = s.dataset.slider;
     SIM_STATE[p] = +s.value;
@@ -815,8 +1131,6 @@ function initSimulador(){
     el(`input[data-slider="${p}"]`).value = v;
     marcarPreset(null); recalc();
   }));
-
-  // Presets
   els('.sim-preset button').forEach(b=>b.addEventListener('click',()=>{
     const k = b.dataset.preset;
     SIM_STATE = {...PRESETS[k]};
@@ -826,23 +1140,19 @@ function initSimulador(){
     });
     marcarPreset(k); recalc();
   }));
-
   recalc();
 }
 function marcarPreset(k){
   els('.sim-preset button').forEach(b=>b.classList.toggle('active', b.dataset.preset===k));
 }
-
 function recalc(){
   const pacs = DATA.parametros.pacotes;
-  // Faturamento adicional do cenário (só o que vai fechar A MAIS)
   let fatAdd=0, custoAdd=0;
   pacs.forEach(p=>{
     const n = SIM_STATE[p.nome]||0;
     fatAdd += n * p.preco_tabela;
     custoAdd += n * p.custo_estande;
   });
-  // Total = já fechado + cenário
   const fatFechado = DATA.kpis.faturamento_fechado;
   const custoFechado = DATA.kpis.custo_estandes_fechados;
   const fatTotal = fatFechado + fatAdd;
@@ -850,8 +1160,7 @@ function recalc(){
   const fixos = DATA.kpis.gastos_fixos_independentes;
   const gastoTotal = custoTotal + fixos;
   const resultado = fatTotal - gastoTotal;
-  const cotasFechadas = DATA.kpis.cotas_vendidas;
-  const cotasCenario = cotasFechadas + Object.values(SIM_STATE).reduce((s,v)=>s+v,0);
+  const cotasCenario = DATA.kpis.cotas_vendidas + Object.values(SIM_STATE).reduce((s,v)=>s+v,0);
 
   el('#sim-fat').textContent = BRL(fatTotal);
   el('#sim-custo').textContent = BRL(custoTotal);
@@ -867,27 +1176,46 @@ function recalc(){
     ? `Lucro projetado — margem de ${PCT(resultado/gastoTotal)} sobre o gasto total`
     : `Prejuízo projetado — falta cobrir ${BRL(Math.abs(resultado))}`;
 
-  // Break-even: quantas cotas AINDA faltam para zerar
   const faltaCobrir = Math.max(0, gastoTotal - fatTotal);
-  const beList = pacs.map(p=>{
-    if(!p.margem_unitaria) return null;
-    // Aqui o cálculo simplificado: quantos estandes adicionais só desse pacote para cobrir o restante
-    // Descontando o custo do estande também (usamos margem unit.)
+  el('#break-even-list').innerHTML = pacs.map(p=>{
+    if(!p.margem_unitaria) return '';
     const n = faltaCobrir>0 ? Math.ceil(faltaCobrir / p.margem_unitaria) : 0;
     const disponivel = PRESETS.max[p.nome];
     const viavel = n <= disponivel;
+    const pacClass = p.nome.toLowerCase().replace(/[^a-z]/g,'');
     return `<div class="item">
-      <span><span class="pill ${p.nome.toLowerCase()}">${p.nome}</span> ${viavel?'':'<span class="muted" style="font-size:11px">(não há cotas suficientes)</span>'}</span>
+      <span><span class="pill ${pacClass}">${p.nome}</span> ${viavel?'':'<span class="muted" style="font-size:11px">(sem cotas suficientes)</span>'}</span>
       <span class="n">${faltaCobrir<=0?'✓ já cobre':`+${n} cota${n===1?'':'s'}`}</span>
     </div>`;
   }).filter(Boolean).join('');
-  el('#break-even-list').innerHTML = beList;
   el('#be-nota').textContent = faltaCobrir<=0
     ? 'O cenário atual já cobre todos os gastos. Cada cota adicional é lucro.'
-    : `Cálculo: gasto total (${BRL(gastoTotal)}) − faturamento do cenário (${BRL(fatTotal)}) = ${BRL(faltaCobrir)} a cobrir. Dividido pela margem unitária de cada pacote.`;
+    : `Gasto total (${BRL(gastoTotal)}) − faturamento (${BRL(fatTotal)}) = ${BRL(faltaCobrir)} a cobrir.`;
 }
 
-carregar();
+// ============================================================
+// INICIALIZAÇÃO
+// ============================================================
+window.addEventListener('load', ()=>{
+  // Se já tem sessão salva, entra direto
+  const saved = sessionStorage.getItem('feira_user');
+  if(saved){
+    try {
+      const u = JSON.parse(saved);
+      entrarNoApp(u);
+      return;
+    } catch(_) { sessionStorage.removeItem('feira_user'); }
+  }
+  // Se offline mode, entra direto sem login
+  if(CFG.OFFLINE_MODE){
+    usarModoOffline();
+    return;
+  }
+  // Senão mostra login
+  initGoogleSignIn();
+  const h = location.hash.slice(1);
+  if(h && TITLES[h]) setTimeout(()=>ativar(h), 100);
+});
 </script>
 
 </body>

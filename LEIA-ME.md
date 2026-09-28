@@ -1,158 +1,164 @@
 # Dashboard Financeiro — Feira de Mercado
 
-Dashboard web profissional para acompanhar o resultado financeiro da Feira de Mercado, com dados que vêm direto da planilha Excel `Financeiro - FEIRA DE MERCADO.xlsx`.
+Dashboard web da EESC Jr. & Produção Jr., com dados vindos direto do **Google Sheets** e acesso restrito a emails **@eescjr.com.br**.
 
-O dashboard tem 5 seções:
+**Como funciona:**
+1. Você mantém a planilha financeira no Google Sheets (uma URL só, sempre a mesma).
+2. Sempre que abrir o dashboard (ou clicar em "↻ Atualizar dados"), ele busca a versão mais recente da planilha automaticamente.
+3. Só quem entrar com email **@eescjr.com.br** consegue ver o conteúdo.
 
-- **Visão Geral** — KPIs principais (faturamento, gasto, resultado, equilíbrio, caixa) e gráficos de vendas por pacote / por EJ.
-- **Empresas Fechadas** — tabela filtrável com todas as empresas que fecharam cota, valor contratado, custo do estande, margem e % recebido.
-- **Fluxo de Caixa** — saldo acumulado mês a mês, entradas × saídas e identificação do pior mês.
-- **Simulador** — para eventos futuros: você ajusta quantas cotas a mais de cada pacote pretende vender e vê o lucro/prejuízo projetado, além do **break-even** (quantas cotas ainda faltam para sair do zero).
-- **Gastos** — composição do gasto previsto, pago vs. pendente, e detalhe de cada linha.
-
----
-
-## 🧠 Antes de tudo: como isso funciona?
-
-Sua planilha vira o dashboard em **três etapas**:
-
-1. **A planilha Excel** (`Financeiro - FEIRA DE MERCADO.xlsx`) continua sendo a fonte da verdade. Você edita ela normalmente.
-2. **Um script em Python** (`build.py`) lê a planilha e gera um arquivo `data.json` — que é a "versão traduzida" dos dados que o dashboard consegue entender.
-3. **O dashboard** (`index.html`) é uma página web que lê o `data.json` e desenha os gráficos e tabelas.
-
-Você tem duas formas de rodar essa "tradução":
-
-- **Localmente** — dando duplo clique em `atualizar_dashboard.bat` (roda no seu computador).
-- **Automaticamente pelo GitHub** — quando você sobe uma planilha nova, o GitHub roda o script sozinho e publica a nova versão do dashboard em uma URL pública.
+O dashboard tem 5 seções: **Visão Geral · Empresas Fechadas · Fluxo de Caixa · Simulador · Gastos**.
 
 ---
 
-## 💻 Uso local (no seu computador)
+## 🔧 Setup completo (fazer uma vez)
 
-### Requisito único: Python
+Se você já tem o dashboard rodando e só quer configurar Sheets + login, pule para o passo 2.
 
-Você precisa ter o Python instalado uma vez. Se ainda não tem:
+### Passo 1 — Publicar o site no GitHub Pages
 
-1. Baixe em https://www.python.org/downloads/
-2. Rode o instalador e **marque a caixinha "Add Python to PATH"** (é o passo mais importante — sem isso o script não funciona).
+*(Se já publicou antes, pule.)*
 
-### Para atualizar o dashboard:
+1. Crie um repositório em https://github.com/ (público) — sugestão: `feira-de-mercado`
+2. Faça upload de **todos** os arquivos desta pasta (incluindo `.github/workflows/deploy.yml` e a pasta `assets/`)
+3. **Settings → Pages → Source: GitHub Actions**
+4. Aguarde ~1 min. Sua URL fica: `https://SEUUSUARIO.github.io/feira-de-mercado/`
 
-1. Edite a planilha `Financeiro - FEIRA DE MERCADO.xlsx` normalmente.
-2. Dê **duplo clique** em `atualizar_dashboard.bat`.
-3. Isso vai:
-   - Ler a planilha
-   - Gerar um `data.json` novo
-   - Abrir o dashboard automaticamente no seu navegador em `http://localhost:8765`
-4. Enquanto quiser usar, deixe a janela preta aberta. Quando terminar, feche ela.
+### Passo 2 — Colocar a planilha no Google Sheets do domínio EESC Jr.
 
-> **Por que precisa desse "servidor local"?** Navegadores modernos por segurança não deixam uma página HTML aberta direto do disco (`file://`) carregar um arquivo `.json`. O `atualizar_dashboard.bat` levanta um mini-servidor local que resolve isso. Alternativa: publique no GitHub Pages (próxima seção) e acesse de qualquer lugar.
+1. Faça login em https://drive.google.com com sua conta **@eescjr.com.br**
+2. Se sua planilha ainda está em `.xlsx`:
+   - Clique em **+ Novo → Upload de arquivo** → envie o `.xlsx`
+   - Clique com botão direito no arquivo → **Abrir com → Planilhas Google**
+   - Isso cria uma versão como Google Sheets. Pode deletar o `.xlsx` depois.
+3. Se já está em outro domínio: **Arquivo → Fazer uma cópia** → mova a cópia para uma pasta do domínio `@eescjr.com.br`
+4. Com a planilha aberta, clique em **Compartilhar** (canto superior direito)
+5. Em **"Acesso geral"**, mude para **"Qualquer pessoa com o link"** e mantenha como **"Leitor"**
+6. Clique em **Copiar link** e cole aqui num bloco de notas — vamos precisar
+7. A URL vai ter esse formato:
+   ```
+   https://docs.google.com/spreadsheets/d/AQUI_TEM_UM_CODIGO_LONGO/edit#gid=0
+   ```
+   Guarde só o pedaço do meio (`AQUI_TEM_UM_CODIGO_LONGO`) — é o **SHEET_ID**.
+
+> **Sobre segurança:** com "qualquer pessoa com o link" só vê quem tem o link. A trava real (só @eescjr.com.br) vem do login no dashboard, no próximo passo.
+
+### Passo 3 — Criar o Client ID do Google (para a trava de login)
+
+Este passo é feito **uma vez só**. Vai levar uns 10 minutos, mas é tudo apontar-e-clicar.
+
+**3.1 — Criar o projeto**
+1. Acesse https://console.cloud.google.com/
+2. No topo, clique no seletor de projeto → **NOVO PROJETO**
+3. Nome: `Feira de Mercado` · Organização: `eescjr.com.br` (se aparecer)
+4. Criar. Espere ~30 segundos. Depois selecione esse projeto no seletor.
+
+**3.2 — Configurar a tela de consentimento**
+1. Menu (☰) → **APIs e serviços → Tela de permissão OAuth**
+2. Tipo de usuário: **Interno** (aparece só se você é admin do Workspace — assim só quem tem `@eescjr.com.br` pode logar; se não aparecer "Interno", escolha "Externo" que também funciona)
+3. Continuar
+4. Preencha:
+   - Nome do app: `Dashboard Feira de Mercado`
+   - Email de suporte: seu email `@eescjr.com.br`
+   - Email do desenvolvedor: seu email `@eescjr.com.br`
+5. Salvar e continuar → pule "Escopos" (Salvar e continuar) → pule "Usuários" → Voltar ao painel
+
+**3.3 — Criar o Client ID**
+1. Menu (☰) → **APIs e serviços → Credenciais**
+2. **+ CRIAR CREDENCIAIS → ID do cliente OAuth**
+3. Tipo de aplicativo: **Aplicativo da Web**
+4. Nome: `Dashboard Web`
+5. Em **Origens JavaScript autorizadas → + ADICIONAR URI**, adicione:
+   - `https://SEUUSUARIO.github.io` (a URL do seu GitHub Pages, sem barra no final)
+   - `http://localhost:8765` (para testar localmente, opcional)
+6. **Criar**
+7. Vai aparecer uma janelinha com o **ID do cliente** — algo tipo `123456789012-abc...xyz.apps.googleusercontent.com`
+8. **Copie esse ID inteiro** e guarde junto com o SHEET_ID.
+
+### Passo 4 — Colocar os dois códigos no dashboard
+
+1. Abra o arquivo `config.js` desta pasta com o **Bloco de Notas** (clique direito → Abrir com → Bloco de Notas)
+2. Substitua os dois `COLE_AQUI...`:
+   ```js
+   SHEET_ID: "1AbCd_seu_id_aqui_XyZ",
+   OAUTH_CLIENT_ID: "123456789012-abc.apps.googleusercontent.com",
+   ```
+3. Salve o arquivo (Ctrl+S)
+4. Faça upload do `config.js` atualizado no GitHub (na página do repositório, clique no arquivo → ícone de lápis → cole o conteúdo → Commit)
+5. Aguarde ~1 min. Pronto.
+
+### Passo 5 — Testar
+
+1. Abra `https://SEUUSUARIO.github.io/feira-de-mercado/`
+2. Clique em **Sign in with Google**
+3. Entre com sua conta **@eescjr.com.br**
+4. Dashboard carrega os dados da planilha em ~2 segundos ✅
+
+Se entrar com outro email, ele bloqueia e mostra "Acesso restrito a @eescjr.com.br".
 
 ---
 
-## 🌐 Publicando no GitHub (dashboard online e automatizado)
+## 🔄 Uso do dia a dia
 
-Assim ele fica **acessível em qualquer lugar** por uma URL tipo `https://seunome.github.io/feira-de-mercado/`, e **atualiza sozinho** toda vez que você subir uma planilha nova.
+- **Editar dados:** edita a planilha no Google Sheets normalmente.
+- **Ver mudanças:** abre o dashboard, clica em **↻ Atualizar dados** no canto inferior esquerdo. Ou espera 10 min (recarrega sozinho).
+- **Compartilhar com o time:** só passa a URL do GitHub Pages. Cada pessoa faz login com o próprio email `@eescjr.com.br`.
 
-### Passo 1 — Criar o repositório
+---
 
-1. Entre em https://github.com/ (você disse que já tem conta).
-2. Canto superior direito, clique no **+** → **New repository**.
-3. Preencha:
-   - **Repository name:** `feira-de-mercado` (ou o nome que preferir)
-   - **Public** (obrigatório se você quiser usar o GitHub Pages grátis)
-   - **NÃO marque** "Add a README file" (já temos um)
-4. Clique em **Create repository**.
+## 📁 Arquivos desta pasta
 
-### Passo 2 — Enviar os arquivos
-
-Você vai ver uma tela do GitHub com várias instruções. Ignore as caixas com comandos e faça assim:
-
-1. Ache a linha em azul que diz **"uploading an existing file"** (deve estar em algum lugar da tela). Clique nela.
-   - Se não achou: no repositório vazio, clique em **Add file** → **Upload files**.
-2. **Arraste todos os arquivos desta pasta** para a caixa do navegador. Deve incluir:
-   - `index.html`
-   - `data.json`
-   - `build.py`
-   - `atualizar_dashboard.bat`
-   - `Financeiro - FEIRA DE MERCADO.xlsx`
-   - `LEIA-ME.md`
-   - `.gitignore`
-   - A pasta `.github` inteira (contém a receita que faz o dashboard rebuildar sozinho)
-
-   > ⚠️ Windows Explorer esconde a pasta `.github` por começar com ponto. Se você não vê ela: no Explorer, aba **Exibir → Mostrar → Itens ocultos**.
-
-3. Role a página até o fim, escreva uma mensagem tipo *"primeiro envio"* e clique em **Commit changes**.
-
-### Passo 3 — Ligar o GitHub Pages
-
-O GitHub Pages é o serviço gratuito que hospeda seu dashboard.
-
-1. No repositório, clique em **Settings** (aba lá em cima).
-2. Menu esquerdo → **Pages**.
-3. Em **Source**, escolha **GitHub Actions**.
-4. Pronto. Não precisa mexer em mais nada.
-
-### Passo 4 — Aguardar o primeiro build
-
-1. Volte para a aba **Actions** do repositório.
-2. Você vai ver um workflow chamado **"Publicar Dashboard"** rodando (ícone amarelo girando).
-3. Espere terminar (dá ~1 minuto). Vira um ✅ verde quando pronto.
-4. Volte em **Settings → Pages**. No topo vai aparecer:
-   > **Your site is live at** `https://SEUNOME.github.io/feira-de-mercado/`
-5. Esse é o link do seu dashboard! Salve nos favoritos.
-
-### Como atualizar depois
-
-Toda vez que a planilha mudar:
-
-1. Vá até o repositório no GitHub.
-2. Clique no arquivo `Financeiro - FEIRA DE MERCADO.xlsx`.
-3. Ícone de lápis (canto direito) → escolha **"Upload files"** OU delete e faça upload de novo.
-4. Confirme (**Commit changes**).
-5. Em ~1 minuto o dashboard estará atualizado na URL pública. Não precisa mexer em mais nada — o GitHub roda o `build.py` sozinho e republica.
+| Arquivo | Para que serve |
+|---|---|
+| `index.html` | O dashboard |
+| `config.js` | **⭐ Único arquivo que você edita** — SHEET_ID e OAUTH_CLIENT_ID |
+| `assets/logo-m.png` | Logo da Feira de Mercado |
+| `assets/banner-ejs.png` | Banner EESC Jr + Produção Jr |
+| `data.json` | Snapshot local (usado como fallback offline) |
+| `build.py` | Gera `data.json` a partir da planilha `.xlsx` local (uso offline) |
+| `atualizar_dashboard.bat` | Regera `data.json` local + abre em `http://localhost:8765` |
+| `Financeiro - FEIRA DE MERCADO.xlsx` | Cópia local da planilha (opcional, só para modo offline) |
+| `LEIA-ME.md` | Este arquivo |
 
 ---
 
 ## ❓ Perguntas frequentes
 
-**Preciso mexer no `data.json` na mão?**
-Não. Ele é gerado automaticamente. Se você editar direto, será sobrescrito no próximo build.
+**A planilha é vista por qualquer um que tenha o link?**
+Tecnicamente sim, mas o dashboard só mostra os dados para quem entrar com email `@eescjr.com.br`. Se você quer uma trava real também na planilha (mais seguro), veja "Melhorias futuras" no fim.
 
-**Posso mudar cores, textos, adicionar seções?**
-Sim. É só editar `index.html` (é um único arquivo, todo comentado por seção). Se travar, é só me chamar.
+**Se eu adicionar uma coluna nova na planilha, o dashboard quebra?**
+Não quebra, mas essa coluna nova não aparece automaticamente. O dashboard lê colunas específicas (documentadas no `index.html`, seção "buscarNoSheets"). Se quiser adicionar coisas novas, me chama.
 
-**A planilha vai ficar pública se eu subir para um repo público?**
-Sim. Quem souber a URL do repositório consegue baixar. Se isso for problema:
-- Opção A: crie o repositório como **Private**. Aí o GitHub Pages exige uma conta paga (GitHub Pro).
-- Opção B: em vez de subir a planilha, você mantém ela só localmente, roda `atualizar_dashboard.bat` para gerar o `data.json`, e sobe SÓ o `data.json`. Nesse caso, remova o passo "Regerar data.json" do arquivo `.github/workflows/deploy.yml`.
+**Preciso rodar algum script?**
+Não, no modo Sheets tudo é automático. O `build.py` só serve se você quiser ter uma cópia offline dos dados (backup ou testar sem internet).
 
-**O que é essa pasta `.github`?**
-É uma receita para o GitHub. Diz: *"toda vez que alguém subir algo aqui, rode o `build.py` e publique o resultado no GitHub Pages."* Sem essa pasta, o site publicaria mas não se atualizaria sozinho.
+**E se eu quiser trabalhar sem internet ou testar mudanças locais?**
+Abre `config.js`, muda `OFFLINE_MODE: true`, salva, e abra `atualizar_dashboard.bat`. Ele lê o `.xlsx` local e gera `data.json`. O dashboard passa a usar essa versão local.
 
-**E se eu quiser adicionar/mudar empresas no simulador?**
-As empresas fechadas vêm da aba **Vendas** da planilha. As cotas totais disponíveis vêm da aba **Parâmetros** (tabela de pacotes). Edite lá, rode a atualização, pronto.
+**Quantos usuários posso ter?**
+Ilimitado. Não paga nada. Google Sheets aguenta a leitura sem problema.
+
+**Preciso de servidor, hospedagem, banco de dados?**
+Nada. Só o GitHub (grátis) e o Google (grátis).
 
 ---
 
-## 📁 O que tem nesta pasta
+## 🔒 Melhorias futuras de segurança (opcional)
 
-| Arquivo | Para que serve |
-|---|---|
-| `Financeiro - FEIRA DE MERCADO.xlsx` | Sua planilha original — **fonte da verdade** |
-| `index.html` | O dashboard em si (não edite se não souber HTML/JS) |
-| `data.json` | Dados extraídos da planilha (gerado automaticamente) |
-| `build.py` | Script que lê a planilha e gera o `data.json` |
-| `atualizar_dashboard.bat` | Duplo clique para atualizar localmente |
-| `.github/workflows/deploy.yml` | Receita da automação do GitHub |
-| `.gitignore` | Diz ao Git para ignorar arquivos temporários |
-| `LEIA-ME.md` | Este arquivo |
+Se um dia quiser fechar totalmente o acesso à planilha (não só ao dashboard):
+
+- Compartilhe a planilha **só com o domínio @eescjr.com.br** em vez de "qualquer pessoa com link"
+- Isso exige o dashboard usar OAuth com escopo `sheets.readonly` para ler
+- É uma mudança de ~30 linhas no `index.html` — me chama que faço
 
 ---
 
 ## 🆘 Alguma coisa deu errado?
 
-- **"Python nao encontrado"** ao rodar o `.bat` → instalar o Python e marcar "Add to PATH".
-- **Dashboard abre mas não mostra nada** → geralmente é o `data.json` faltando ou desatualizado. Rode o `.bat` de novo.
-- **Workflow do GitHub falhou (X vermelho)** → clique nele, veja a mensagem de erro. Normalmente é a planilha com formato diferente do esperado.
-- **Não sei mais o que fazer** → me manda a mensagem de erro exata, resolvo.
+- **"O Client ID do Google ainda não foi configurado"** → você não editou `config.js` ainda, ou não subiu ele para o GitHub.
+- **"Aba X não acessível (HTTP 404)"** → o nome da aba da planilha está diferente do esperado. As abas devem chamar-se: `Parâmetros`, `Vendas`, `Gastos Previstos`, `Gastos Realizados`, `Fluxo de Caixa`.
+- **"Aba X não acessível (HTTP 401/403)"** → a planilha não está com o compartilhamento "qualquer pessoa com o link".
+- **Login carrega infinito** → a URL do seu GitHub Pages não foi adicionada nas "Origens autorizadas" do OAuth Client ID (passo 3.3).
+- **Dashboard mostra dados desatualizados** → clica em "↻ Atualizar dados" no canto inferior esquerdo.
+- **Não sei o que fazer** → me manda o print da tela de erro.
