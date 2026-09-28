@@ -160,6 +160,25 @@ window.BANNER_EJS_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAABc
 
   .cover-note{font-size:12px;color:var(--muted);margin-top:8px;font-style:italic}
 
+  /* Cards de Contribuição por EJ */
+  .ej-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:800px){.ej-cards{grid-template-columns:1fr}}
+  .ej-card{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden}
+  .ej-card .ej-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .ej-card .ej-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+  .ej-card .ej-name{font-size:15px;font-weight:600;letter-spacing:-.01em}
+  .ej-card .ej-share{color:var(--muted);font-size:12px;margin-left:auto}
+  .ej-card .ej-lbl{color:var(--muted);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+  .ej-card .ej-result{font-size:28px;font-weight:700;letter-spacing:-.02em;margin-bottom:14px;line-height:1.1}
+  .ej-card .ej-result.ok{color:var(--ok)}
+  .ej-card .ej-result.danger{color:var(--danger)}
+  .ej-card .ej-progress{height:6px;border-radius:4px;background:var(--panel);margin-bottom:14px;overflow:hidden}
+  .ej-card .ej-progress>span{display:block;height:100%;border-radius:4px;transition:width .5s}
+  .ej-card .ej-line{display:flex;justify-content:space-between;padding:8px 0;font-size:13px;border-bottom:1px solid var(--border-soft)}
+  .ej-card .ej-line:last-child{border-bottom:none;padding-bottom:0}
+  .ej-card .ej-line .lbl{color:var(--muted)}
+  .ej-card .ej-line .val{font-variant-numeric:tabular-nums;font-weight:600}
+
   .mono{font-variant-numeric:tabular-nums}
   .muted{color:var(--muted)}
   .text-ok{color:var(--ok)}
@@ -254,9 +273,14 @@ window.BANNER_EJS_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAABc
         <div class="panel"><h3>Vendas por Pacote</h3><div class="chart-wrap"><canvas id="chart-pacotes"></canvas></div></div>
         <div class="panel"><h3>Faturamento por Empresa Júnior</h3><div class="chart-wrap"><canvas id="chart-ejs"></canvas></div></div>
       </div>
-      <div class="grid two">
+      <div class="grid two" style="margin-bottom:16px">
         <div class="panel"><h3>Previsto × Realizado (gastos por categoria)</h3><div class="chart-wrap"><canvas id="chart-prev-real"></canvas></div></div>
         <div class="panel"><h3>Ocupação por Pacote (cotas vendidas / totais)</h3><div class="chart-wrap"><canvas id="chart-ocup"></canvas></div></div>
+      </div>
+      <div class="panel">
+        <h3>Contribuição por Empresa Júnior</h3>
+        <p class="cover-note" style="margin-top:-8px;margin-bottom:16px">Gasto proporcional ao faturamento que cada EJ trouxe ao evento</p>
+        <div id="cards-ejs" class="ej-cards"></div>
       </div>
     </section>
 
@@ -385,7 +409,10 @@ const PCT = v => new Intl.NumberFormat('pt-BR',{style:'percent',maximumFractionD
 const el = s => document.querySelector(s);
 const els = s => document.querySelectorAll(s);
 const COR = { Executivo:'#5b7fff', Bronze:'#cd7f32', Prata:'#c8d2e0', Ouro:'#f5c451', 'Patrocínio':'#a06bff' };
-const COR_EJ = ['#5b7fff','#00d9b5','#a06bff','#ffb84d'];
+// Cores das EJs: EESC Jr = azul escuro, Produção Jr = azul claro
+const COR_EJ_MAP = { 'EESC Jr':'#1e3a8a', 'Produção Jr':'#60a5fa' };
+const COR_EJ_FALLBACK = ['#5b7fff','#00d9b5','#a06bff','#ffb84d'];
+const corEJ = (nome, i) => COR_EJ_MAP[nome] || COR_EJ_FALLBACK[i % COR_EJ_FALLBACK.length];
 Chart.defaults.color = '#8a97b8';
 Chart.defaults.borderColor = '#272f5b';
 Chart.defaults.font.family = "'Inter','Segoe UI',system-ui,sans-serif";
@@ -846,10 +873,44 @@ function renderEJs(){
   destroyChart('chart-ejs');
   const rows = Object.entries(DATA.faturamento_por_ej);
   new Chart(el('#chart-ejs'), {type:'doughnut',
-    data:{labels:rows.map(([k])=>k),datasets:[{data:rows.map(([,v])=>v),backgroundColor:rows.map((_,i)=>COR_EJ[i%COR_EJ.length]),borderColor:'#131c3d',borderWidth:2}]},
+    data:{labels:rows.map(([k])=>k),datasets:[{data:rows.map(([,v])=>v),backgroundColor:rows.map(([k],i)=>corEJ(k,i)),borderColor:'#131c3d',borderWidth:2}]},
     options:{cutout:'62%',maintainAspectRatio:false,
       plugins:{legend:{position:'right',labels:{padding:12,usePointStyle:true,pointStyle:'circle',boxWidth:8}},
         tooltip:{callbacks:{label:c=>` ${c.label}: ${BRL(c.parsed)}`}}}}});
+  renderContribuicaoEJ();
+}
+
+function renderContribuicaoEJ(){
+  const rows = Object.entries(DATA.faturamento_por_ej);
+  const totalFat = rows.reduce((s,[,v])=>s+v,0);
+  const gastoTotal = DATA.kpis.gasto_total_previsto;
+  const totalPago = DATA.kpis.total_pago_realizado;
+
+  const container = el('#cards-ejs');
+  if(!container) return;
+  container.innerHTML = rows.map(([nome, fat], i) => {
+    const share = totalFat ? fat/totalFat : 0;
+    const custoProp = gastoTotal * share;
+    const pagoProp = totalPago * share;
+    const resultado = fat - custoProp;
+    const margem = fat ? resultado/fat : 0;
+    const cor = corEJ(nome, i);
+    const rCls = resultado >= 0 ? 'ok' : 'danger';
+    return `<div class="ej-card">
+      <div class="ej-hdr">
+        <span class="ej-dot" style="background:${cor}"></span>
+        <span class="ej-name">${nome}</span>
+        <span class="ej-share">${PCT(share)} do faturamento</span>
+      </div>
+      <div class="ej-lbl">Resultado líquido</div>
+      <div class="ej-result mono ${rCls}">${BRL(resultado)}</div>
+      <div class="ej-progress"><span style="width:${Math.min(100, share*100)}%;background:${cor}"></span></div>
+      <div class="ej-line"><span class="lbl">Faturamento contratado</span><span class="val mono">${BRL(fat)}</span></div>
+      <div class="ej-line"><span class="lbl">Gasto proporcional previsto</span><span class="val mono">${BRL(custoProp)}</span></div>
+      <div class="ej-line"><span class="lbl">Gasto proporcional já pago</span><span class="val mono">${BRL(pagoProp)}</span></div>
+      <div class="ej-line"><span class="lbl">Margem sobre faturamento</span><span class="val mono">${PCT(margem)}</span></div>
+    </div>`;
+  }).join('');
 }
 function renderPrevReal(){
   destroyChart('chart-prev-real');
